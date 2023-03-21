@@ -1,0 +1,51 @@
+#user-wrapper {
+    display: flex;
+    height: calc(100vh - 87px); 
+    width: 100%;
+    /* banner is 85px */
+}
+
+#user-content {
+    width: 250px;
+    margin: auto;
+    text-align: center;
+}
+
+#user-img {
+    margin-bottom: 15px;
+    border-radius: 50%;
+    width: 70%;
+}
+
+#user-name {
+    font-size: 22px;
+    font-weight: 800;
+    text-decoration: none;
+    color: white;
+    margin-bottom: 20px;
+    display: block;
+}
+
+#user-name:hover {
+    color: #1db954;
+}
+
+#user-stat-row {
+    /* margin-bottom: 50px; */
+}
+
+.user-stat {
+    margin: 10px;
+    padding: 10px 5px;
+    background-color: #181818;
+    border-radius: 5px;
+}
+
+.user-stat * {
+    margin: 0px;
+}
+
+.user-stat h4 {
+    padding-top: 10px;
+    color: #1db954;
+}

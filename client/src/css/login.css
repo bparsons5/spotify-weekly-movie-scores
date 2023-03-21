@@ -1,0 +1,36 @@
+#login-content {
+    display: flex;
+    text-align: center;
+    height: 100vh;
+}
+  
+.center {
+    align-self: center;
+    margin: auto;
+    background-color: #222;
+    padding: 30px;
+    border-radius: 15px;
+}
+
+#spotify-logo {
+    font-size: 150px;
+    margin-bottom: 20px;
+    color: #1db954;
+}
+
+#spotify-playlist {
+    margin-right: 5px;
+    color: white;
+}
+
+#playlist {
+    color: #b4b4b4;
+    margin-bottom: 25px;
+    font-size: small;
+    font-weight: 700;
+}
+
+#spotify-login-button:hover {
+    color: white;
+    background-color: #2fc463;
+}
