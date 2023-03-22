@@ -329,15 +329,21 @@ const Playlist = ({ user }) => {
             // catchErrors(add(albumId));
 
             // ADD THE ALBUMS TO THE PLAYLIST!!!! YAY!!!!
-            if (output.length > 0) {
-                catchErrors(clear())
-            }
 
-            for (let i in output) {
-                output[i].forEach(x => {
-                    catchErrors(add(x.id));
-                })
-            }
+            // ADD THE ALBUMS TO THE PLAYLIST!!!! YAY!!!!
+            const updatePlaylist = async () => {
+                // if (output.length > 0) {
+                //     await catchErrors(clear())
+                // }
+    
+                for (let i in output) {
+                    output[i].forEach(x => {
+                        catchErrors(add(x.id));
+                    })
+                }
+            };
+            // updatePlaylist()
+
 
         }
 
