@@ -110,9 +110,33 @@ const Playlist = ({ user }) => {
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
+    // clear playlist
+    const clearWeeklyMovieScores = async () => {
+        let playlistTracksResponse = await getPlaylistTracks(weeklyMovieScoresId) // max of 100 at a time
+        let num = 0
+        do
+        {   
+            if (num > 0) {
+                playlistTracksResponse = await axios.get(playlistTracksResponse.data.next);
+            } else {
+                num++
+            }
+
+            const trackList = {
+                tracks: []
+            }
+            playlistTracksResponse.data.items.forEach(x => trackList.tracks.push({ uri: x.track.uri }))
+
+            clearPlaylist(weeklyMovieScoresId, trackList)
+        } while (playlistTracksResponse.data.next !== null);
+    };
+
     useEffect(() => {
 
         const fetchData = async () => {
+            // before going through and adding albums, we must clear the playlist
+            catchErrors(clearWeeklyMovieScores());
+
             const weeklyMovieScoresResponse = await getPlaylistById(weeklyMovieScoresId);
             setWeeklyMovieScores(weeklyMovieScoresResponse.data)
 
@@ -297,30 +321,6 @@ const Playlist = ({ user }) => {
             }
             console.log(output)
 
-            // clear playlist
-            const clear = async () => {
-                let playlistTracksResponse = await getPlaylistTracks(weeklyMovieScoresId) // max of 100 at a time
-                let num = 0
-                do
-                {   
-                    if (num > 0) {
-                        playlistTracksResponse = await axios.get(playlistTracksResponse.data.next);
-                    } else {
-                        num++
-                    }
-                    // console.log(playlistTracksResponse)
-
-                    const trackList = {
-                        tracks: []
-                    }
-                    playlistTracksResponse.data.items.forEach(x => trackList.tracks.push({ uri: x.track.uri }))
-                    // console.log(trackList)
-
-                    clearPlaylist(weeklyMovieScoresId, trackList)
-                } while (playlistTracksResponse.data.next !== null);
-            };
-            // catchErrors(clear());
-
             // add to playlist
             const add = async (albumId) => {
                 const albumTracksResponse = await getAlbumTracks(albumId)
@@ -342,7 +342,7 @@ const Playlist = ({ user }) => {
                     })
                 }
             };
-            // updatePlaylist()
+            updatePlaylist()
 
 
         }
@@ -351,6 +351,8 @@ const Playlist = ({ user }) => {
             
     useEffect(() => {
         if (weeklyMovieScores !== null && user !== null) {
+            console.log(weeklyMovieScores)
+
             // let tableDataHeaders = ['#', 'IMG', 'TITLE', 'ALBUM', 'DURATION']
             setItems(weeklyMovieScores.tracks.items)
 
@@ -358,6 +360,7 @@ const Playlist = ({ user }) => {
             // make sure we get ALL playlists by fetching the next set of playlists
             const getPlaylistOwner = async () => {
                 const { data } = await axios.get(weeklyMovieScores.owner.href);
+                console.log(data)
                 setPlaylistOwner(data)
             };
 
@@ -403,7 +406,7 @@ const Playlist = ({ user }) => {
                         <a id='playlist-title' target='_blank' rel="noreferrer" href={weeklyMovieScores ? weeklyMovieScores.external_urls.spotify : '#'}>{weeklyMovieScores ? weeklyMovieScores.name : ''}</a>
                         <div id='playlist-meta'>
                             <img src={playlistOwner ? playlistOwner.images[0].url : ''} alt='meta-img'></img>
-                            <span id='playlist-owner'>{weeklyMovieScores ? weeklyMovieScores.owner.display_name : ''}</span>
+                            <span id='playlist-owner'><a target='_blank' rel="noreferrer" href={weeklyMovieScores ? weeklyMovieScores.owner.external_urls.spotify : '#'}>{weeklyMovieScores ? weeklyMovieScores.owner.display_name : ''}</a></span>
                             <span id='dot'><RxDotFilled></RxDotFilled></span>
                             {weeklyMovieScores ? <span id='followers-total'>{weeklyMovieScores.followers.total > 1 ? weeklyMovieScores.followers.total + ' likes' : weeklyMovieScores.followers.total + ' like' }</span> : '' }
                             <span id='dot'><RxDotFilled></RxDotFilled></span>

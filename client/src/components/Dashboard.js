@@ -27,7 +27,7 @@ const Dashboard = ({ accessToken, logout }) => {
   return (
     <div id='dashboard'>
       <div id='panel'> 
-        <BsSpotify id='panel-spotify-logo'></BsSpotify>
+        <a id='spotify-link' target='_blank' rel="noreferrer" href='https://open.spotify.com/'><BsSpotify id='panel-spotify-logo'></BsSpotify></a>
         <div id='panel-spotify-banner'>
           <button id='panel-spotify-log-out' onClick={logout}>LOG OUT</button>
         </div>

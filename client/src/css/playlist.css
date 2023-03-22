@@ -88,6 +88,17 @@
     font-weight: 600;
 }
 
+#playlist-owner a {
+    text-decoration: none;
+    color: inherit;
+}
+
+#playlist-owner a:hover {
+    color: #1db954 !important;
+}
+
+
+
 #playlist-meta img {
     height: 100%;
     border-radius: 50%;
@@ -192,13 +203,14 @@
 .track-title h6 {
     color: white;
     margin: 3px 0px 0px 0px;
-
+    font-size: 15px;
     padding: 0px !important;
 }
 
 .track-title p {
     margin: 0px !important;
     padding: 0px !important;
+    font-size: 13px;
 }
 
 .track-img {
