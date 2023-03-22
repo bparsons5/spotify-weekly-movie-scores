@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react'
 import { catchErrors } from '../js/utils';
-// import { getPlaylistById, doesUserFollowPlaylist, followPlaylist } from '../js/spotify';
 import { getPlaylistById, doesUserFollowPlaylist, followPlaylist, searchSpotify, getPlaylistTracks, clearPlaylist, addTracksToPlaylist, getAlbumTracks, getGenres } from '../js/spotify';
 import { getWeeklyMovies } from '../js/weekly'
-// import { weekly } from '../js/weekly';
 import axios from 'axios';
 import '../css/playlist.css';
 import { RxDotFilled } from "react-icons/rx";
 import { TbClockHour3 } from "react-icons/tb";
+import { FiInfo } from "react-icons/fi";
 import { RiHeartAddLine, RiHeartFill } from "react-icons/ri";
 import blank_playlist from '../images/blank_playlist.png'
+import Modal from 'react-bootstrap/Modal';
+import ListGroup from 'react-bootstrap/ListGroup';
 
 
 const calculatePlayTimeString = (playTime) => {
@@ -81,18 +82,33 @@ const Playlist = ({ user }) => {
     const [items, setItems] = useState([])
     const [playTimeString, setPlayTimeString] = useState(null)
     const [playlistOwner, setPlaylistOwner] = useState(null)
-    const [searchData, setSearchData] = useState(null);
-    const [search, setSearch] = useState(null);
+    
     const [movies, setMovies] = useState(null);
     const [moviesData, setMoviesData] = useState(null);
-    const [titles, setTitles] = useState(null);
-    const [titleIndex, setTitleIndex] = useState(null);
-    const [spotifyData, setSpotifyData] = useState(null);
-    const [spotify, setSpotify] = useState(null);
-    const weeklyMovieScoresId =  '15a8yM3uV2nouNvpbeAhYl'
-    const start =  '2023-03-14'
-    const end =  '2023-03-21'
 
+    const [titleIndex, setTitleIndex] = useState(0);
+    const [titles, setTitles] = useState(null);
+    const [returnTitles, setReturnTitles] = useState(null);
+
+    const [spotifyIndex, setSpotifyIndex] = useState(0);
+    const [spotify, setSpotify] = useState(null);
+    const [spotifyData, setSpotifyData] = useState(null);
+    const [spotifyAllAlbums, setSpotifyAllAlbums] = useState(null);
+    const [spotifyTotal, setSpotifyTotal] = useState(null);
+    const [albumsToAdd, setAlbumsToAdd] = useState(null);
+
+    const weeklyMovieScoresId =  '15a8yM3uV2nouNvpbeAhYl'
+
+    const dateEnd = new Date()
+    const end =  dateEnd.toISOString().split('T')[0]
+
+    const dateStart = new Date()
+    dateStart.setDate(dateStart.getDate() - 7)
+    const start =  dateStart.toISOString().split('T')[0]
+
+    const [show, setShow] = useState(false);
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
 
     useEffect(() => {
 
@@ -110,10 +126,6 @@ const Playlist = ({ user }) => {
         catchErrors(fetchData());
     }, []);
 
-
-    // KEY LOOP FOR GETTING ALL DATA FROM SPOTIFY
-    // When searchData updates, check if there are more search to fetch
-    // then update the state variable
     useEffect(() => {
         if (!moviesData) {
             return;
@@ -141,16 +153,14 @@ const Playlist = ({ user }) => {
 
     }, [moviesData]);
     
-
     useEffect(() => {
         if (movies !== null && moviesData !== null) {
             if (movies.length === moviesData.total_results) {
                 setTitles([...new Set(movies.map(x => x.title).sort())])
-                setTitleIndex(0)
+                // console.log(movies)
             }
         }
     }, [movies, moviesData]);
-
 
     useEffect(() => {
         if (!titles) {
@@ -158,23 +168,29 @@ const Playlist = ({ user }) => {
         }
     
         const fetchData = async (title) => {
-            console.log(title)
-            let movieTitleStripped = title.replace(/[^a-zA-Z0-9-_]/g, ' ')
+            // console.log(title)
+            let movieTitleStripped = title.replace(/[^a-zA-Z0-9-_]/g, ' ').trim()
 
             if (movieTitleStripped !== '') {
                 const searchResponse = await searchSpotify(`album:${title.replace(/[^a-zA-Z0-9-_]/g, ' ')}+tag:new&type=album`);
 
                 if (searchResponse.data.albums.items.length > 0) {
-                    console.log(searchResponse.data.albums)
-                } 
-                // else {
-                //     setSearchData(searchResponse.data.albums);
-                // }
-            }
+                    setReturnTitles(returnTitles => ([
+                        ...returnTitles ? returnTitles : [],
+                        title
+                    ]));
 
+                    setSpotify(spotify => ([
+                        ...spotify ? spotify : [],
+                        searchResponse.data.albums
+                    ]));
+                }
+
+            } 
+            
             if (titleIndex < titles.length - 1) {
-                const newIndex = await titleIndex + 1 // when updating the trigger variable, wait for it to find the new value. 
                 // setTitleIndex((t) => t + 1) // results in an infinite loop
+                const newIndex = await titleIndex + 1 // when updating the trigger variable, wait for it to find the new value. 
                 setTitleIndex(newIndex)
             }
         };
@@ -183,106 +199,150 @@ const Playlist = ({ user }) => {
 
     }, [titles, titleIndex]);
 
+    useEffect(() => {
+        if (!spotify) {
+            return;
+        }
+
+        if (titleIndex === titles.length - 1) {
+            if (spotifyIndex === 0) {
+                // console.log(returnTitles)
+                // console.log(spotify)
+            }
+            if (spotifyIndex < spotify.length) {
+                setSpotifyData(spotify[spotifyIndex])
+            }
+        }
+
+    }, [spotify, returnTitles, spotifyIndex, titles, titleIndex])
 
     // KEY LOOP FOR GETTING ALL DATA FROM SPOTIFY
     // When searchData updates, check if there are more search to fetch
     // then update the state variable
     useEffect(() => {
-        if (!searchData) {
+        if (!spotifyData) {
             return;
         }
 
         // Playlist endpoint only returns 20 search at a time, so we need to
         // make sure we get ALL search by fetching the next set of search
         const fetchMoreData = async () => {
-            if (searchData.next) {
-                const { data } = await axios.get(searchData.next);
-                setSearchData(data.albums);
+            if (spotifyData.next) {
+                const { data } = await axios.get(spotifyData.next);
+                setSpotifyData(data.albums);
+            } else {
+                // setTitleIndex((t) => t + 1) // results in an infinite loop
+                const newIndex = await spotifyIndex + 1 // when updating the trigger variable, wait for it to find the new value. 
+                setSpotifyIndex(newIndex)
             }
         };
 
         // Use functional update to update search state variable
         // to avoid including search as a dependency for this hook
         // and creating an infinite loop
-        setSearch(search => ([
-            ...search ? search : [],
-            ...searchData.items
+        setSpotifyAllAlbums(spotifyAllAlbums => ([
+            ...spotifyAllAlbums ? spotifyAllAlbums : [],
+            ...spotifyData.items
         ]));
 
         // Fetch next set of search as needed
         catchErrors(fetchMoreData());
 
-    }, [searchData]);
+    }, [spotifyData]);
     
+    useEffect(() => {
+        if (!spotifyAllAlbums) {
+            return;
+        }
+        
+        if (spotifyAllAlbums.length === spotifyData.total) {
 
-    // useEffect(() => {
-    //     if (search !== null && searchData !== null) {
-    //         if (search.length !== 0 && search.length === searchData.total) {
-    //             // console.log(searchData) // hitting 1000 length limit
-    //             // console.log(search.filter(x => x ? x.album_type === 'album' : false))
-                
-    //             console.log(search)
-    //             if (titleIndex < titles.length) {
-    //                 setTitleIndex(t => t + 1) // ready to loop through next title
-    //             }
+            const soundtrackTags = [
+                ' OST',
+                'score',
+                'Score',
+                'soundtrack',
+                'Soundtrack'
+            ]
+            
+            // filter to soundtracks
+            let actualAlbums = spotifyAllAlbums.filter((x) => soundtrackTags.some(y => { if (x) { return (x.name.includes(y)) } }));
 
-    //             // const soundtrackTags = [
-    //             //     ' OST',
-    //             //     'score',
-    //             //     'Score',
-    //             //     'soundtrack',
-    //             //     'Soundtrack',
-    //             //     'movie',
-    //             //     'Movie',
-    //             //     'film',
-    //             //     'Film',
-    //             // ]
+            setSpotifyTotal(spotifyTotal => ([
+                ...spotifyTotal ? spotifyTotal : [],
+                actualAlbums
+            ]));
 
-    //             // setSearchData(searchResponse.data.albums.items.filter(x => soundtrackTags.some(y => x.name.includes(y))));
-                
+            // reset the variable for the next spot to go through
+            setSpotifyAllAlbums(null)
+        }
+    }, [spotifyAllAlbums, spotifyData, returnTitles]);
 
-    //             // console.log(search)
-    //             // let albumsToAdd = search.filter(x => soundtrackTags.some(y => x.name.includes(y)))
-    //             // console.log(albumsToAdd)
+    useEffect(() => {
+        if (!spotifyTotal) {
+            return;
+        }
 
-    //             // add to playlist
-    //             // let albumId = search.filter(x => soundtrackTags.some(y => x.name.includes(y)))[0].id
-    //             // const add = async (albumId) => {
-    //             //     const albumTracksResponse = await getAlbumTracks(albumId)
-    //             //     addTracksToPlaylist(weeklyMovieScoresId, albumTracksResponse.data.items.map(x => x.uri).join(','))
-    //             // };
-    //             // catchErrors(add(albumId));
+        if (spotifyTotal.length === spotify.length) {
 
+            // narrow down to the specific album
+            let output = [] 
+            for (let i in spotifyTotal) {
+                if (spotifyTotal[i].length !== 0) {
+                    let albums = spotifyTotal[i].filter(x => x.name.startsWith(returnTitles[i] + ' ('))
+                    if (albums.length > 0) {
+                        output.push(albums)
+                    }
+                }
+            }
+            console.log(output)
 
-    //             // clear playlist
-    //             // const clear = async () => {
-    //             //     let playlistTracksResponse = await getPlaylistTracks(weeklyMovieScoresId) // max of 100 at a time
-    //             //     let num = 0
-    //             //     do
-    //             //     {   
-    //             //         if (num > 0) {
-    //             //             playlistTracksResponse = await axios.get(playlistTracksResponse.data.next);
-    //             //         } else {
-    //             //             num++
-    //             //         }
-    //             //         // console.log(playlistTracksResponse)
+            // clear playlist
+            const clear = async () => {
+                let playlistTracksResponse = await getPlaylistTracks(weeklyMovieScoresId) // max of 100 at a time
+                let num = 0
+                do
+                {   
+                    if (num > 0) {
+                        playlistTracksResponse = await axios.get(playlistTracksResponse.data.next);
+                    } else {
+                        num++
+                    }
+                    // console.log(playlistTracksResponse)
 
-    //             //         const trackList = {
-    //             //             tracks: []
-    //             //         }
-    //             //         playlistTracksResponse.data.items.forEach(x => trackList.tracks.push({ uri: x.track.uri }))
-    //             //         // console.log(trackList)
+                    const trackList = {
+                        tracks: []
+                    }
+                    playlistTracksResponse.data.items.forEach(x => trackList.tracks.push({ uri: x.track.uri }))
+                    // console.log(trackList)
 
-    //             //         clearPlaylist(weeklyMovieScoresId, trackList)
-    //             //     } while (playlistTracksResponse.data.next !== null);
-    //             // };
-    //             // catchErrors(clear());
+                    clearPlaylist(weeklyMovieScoresId, trackList)
+                } while (playlistTracksResponse.data.next !== null);
+            };
+            // catchErrors(clear());
 
-    //         }
-    //     }
-    // }, [search, searchData]);
+            // add to playlist
+            const add = async (albumId) => {
+                const albumTracksResponse = await getAlbumTracks(albumId)
+                addTracksToPlaylist(weeklyMovieScoresId, albumTracksResponse.data.items.map(x => x.uri).join(','))
+            };
+            // catchErrors(add(albumId));
 
+            // ADD THE ALBUMS TO THE PLAYLIST!!!! YAY!!!!
+            if (output.length > 0) {
+                catchErrors(clear())
+            }
 
+            for (let i in output) {
+                output[i].forEach(x => {
+                    catchErrors(add(x.id));
+                })
+            }
+
+        }
+
+    }, [spotifyTotal, spotify, returnTitles])
+            
     useEffect(() => {
         if (weeklyMovieScores !== null && user !== null) {
             // let tableDataHeaders = ['#', 'IMG', 'TITLE', 'ALBUM', 'DURATION']
@@ -303,7 +363,6 @@ const Playlist = ({ user }) => {
 
     }, [ weeklyMovieScores, user ])
 
-
     useEffect(() => {
         if (items.length > 0) {
             let tracks = items.map(x => x.track)
@@ -319,7 +378,6 @@ const Playlist = ({ user }) => {
 
     }, [items])
 
-    
     const followWeeklyMovieScores = () => {
         setClicked(true)
         followPlaylist('15a8yM3uV2nouNvpbeAhYl')
@@ -328,11 +386,13 @@ const Playlist = ({ user }) => {
     // account for 20+ tracks
 
     return (
+        <>
         <div id='playlist-wrapper'>
             <div id='playlist-content'>
                 <div id='playlist-header'>
                     <img id='playlist-img' src={weeklyMovieScores ? (weeklyMovieScores.images.length > 0 ? weeklyMovieScores.images[0].url : blank_playlist) : ''} alt='playlist-img'></img>
                     <div id='playlist-details'>
+                        <FiInfo id='playlist-info' onClick={handleShow}></FiInfo>
                         <p>PUBLIC PLAYLIST</p>
                         <a id='playlist-title' target='_blank' rel="noreferrer" href={weeklyMovieScores ? weeklyMovieScores.external_urls.spotify : '#'}>{weeklyMovieScores ? weeklyMovieScores.name : ''}</a>
                         <div id='playlist-meta'>
@@ -349,7 +409,6 @@ const Playlist = ({ user }) => {
 
 
                 <div id='playlist-body'>
-                    
                     <span id='add-playlist' onClick={() => followWeeklyMovieScores()}>{clicked ? <RiHeartFill id='clicked' className="add-icon"></RiHeartFill> : <RiHeartAddLine id='unclicked' className="add-icon"></RiHeartAddLine>}</span>
 
                     <div id='playlist-table'>
@@ -379,6 +438,22 @@ const Playlist = ({ user }) => {
                 </div>
             </div>
         </div>
+        <Modal id='info-modal' show={show} onHide={handleClose}>
+            <Modal.Header closeButton>
+                <Modal.Title>Weekly Movie Scores Info</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <h5>The Weekly Movie Scores web app executes the following steps to add soundtracks to this playlist on a weekly basis as best it can. Enjoy!</h5>
+                <ListGroup as="ol" numbered>
+                    <ListGroup.Item as="li">Ping the TMDB API to return all movies released within the past week in the US</ListGroup.Item>
+                    <ListGroup.Item as="li">Utilize Spotify's API Search Method to search for any albums that each movie title</ListGroup.Item>
+                    <ListGroup.Item as="li">As spotify's search returns numerous objects, thes script goes through and filter the results on keywords like <i>'Soundtrack'</i>, <i>'Score'</i>, etc.</ListGroup.Item>
+                    <ListGroup.Item as="li">A second layer of filtering is necessary to confirm the album is indeed the movie soundtrack -  this is mainly done by looking for the common structure of <i>'movie title (movie soundtrack deliniation)'</i></ListGroup.Item>
+                    <ListGroup.Item as="li">Once again uses the spotify API to then clear the playlist and add the last weeks movie scores</ListGroup.Item>
+                </ListGroup>
+            </Modal.Body>
+        </Modal>
+        </>
     )
 }
 

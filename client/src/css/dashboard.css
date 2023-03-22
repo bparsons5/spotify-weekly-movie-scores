@@ -66,13 +66,46 @@
 
 #recognition * {
     display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 0px;
+}
+
+#recognition div {
+    width: 100%;
 }
 
 #powered-by {
     color: #6fc6b2;
     padding-right: 10px;
+    font-size: 12px;
+    font-weight: 600;
 }
 
-#tmdb {
-    width: 40px;
+#tmdb-img {
+    width: 24px;
+    transition: .2s;
+}
+
+#tmdb-img:hover {
+    width: 26px;
+    transition: .2s;
+}
+
+#bp-link {
+    margin-left: 5px;
+    color: #909090;
+    text-decoration: none;
+    transition: .5s;
+    font-style: italic;
+}
+
+#bp-link:hover {
+    color: #1cb955;
+    font-size: 13px;
+    transition: .5s;
+}
+
+#bp-link-icon {
+    margin-left: 5px;
 }
