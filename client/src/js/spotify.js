@@ -168,6 +168,15 @@ export const getPlaylistById = (id) => {
 };
 
 /**
+ * Get specific playlist
+ * @returns {Promise}
+ */
+export const getGenres = (id) => {
+  // '15a8yM3uV2nouNvpbeAhYl' Weekly Movie Scores Playlist Id
+  return axios.get(`/recommendations/available-genre-seeds`);
+};
+
+/**
  * Search Query
  * @returns {Promise}
  */
@@ -253,3 +262,4 @@ export const followPlaylist = playlistId => {
  */
 export const getTrack = trackId =>
   axios.get(`/tracks/${trackId}`);
+

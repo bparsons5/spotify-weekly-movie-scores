@@ -59,3 +59,20 @@
 #actions button {
     margin-bottom: 7px;
 }
+
+#recognition {
+    text-align: center;
+}
+
+#recognition * {
+    display: inline-block;
+}
+
+#powered-by {
+    color: #6fc6b2;
+    padding-right: 10px;
+}
+
+#tmdb {
+    width: 40px;
+}

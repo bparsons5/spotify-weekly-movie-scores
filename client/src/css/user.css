@@ -1,8 +1,8 @@
 #user-wrapper {
     display: flex;
-    height: calc(100vh - 87px); 
+    height: calc(100vh - 150px); 
     width: 100%;
-    /* banner is 85px */
+    min-height: 340px;
 }
 
 #user-content {

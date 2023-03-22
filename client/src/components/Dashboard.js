@@ -31,6 +31,9 @@ const Dashboard = ({ accessToken, logout }) => {
           <button id='panel-spotify-log-out' onClick={logout}>LOG OUT</button>
         </div>
         <User user={user} playlistCount={playlistCount}></User>
+        <div id='recognition'>
+            <span><p id='powered-by'>powered by</p><img id='tmdb' src='https://www.themoviedb.org/assets/2/v4/logos/v2/blue_square_2-d537fb228cf3ded904ef09b136fe3fec72548ebc1fea3fbbd1ad9e36364db38b.svg' alt='tmdb'></img></span>
+        </div>
       </div>
       {/* get rid of main */}
       <div id='main'>

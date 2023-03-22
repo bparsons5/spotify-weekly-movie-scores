@@ -1,20 +1,11 @@
-
-import { searchSpotify } from '../js/spotify';
+import axios from 'axios';
 
 /**
- * Grabs Weekly Movie Score Albums
- * https://developer.spotify.com/documentation/web-api/reference/users-profile/get-current-users-profile/
+ * Follow a Playlist
+ * https://developer.spotify.com/documentation/web-api/reference/follow/follow-playlist/
  */
-export const weekly = async () => {
-
-    // 2 ways to do this
-
-    // 1 - search for OST, Soundtrack, Original Score, etc. and have the new tag (within the past 2 weeks) then use the release date to filter
-
-
-    // 2 - use another api to get what movies came out this past weekend to then search for within spotify
-
-    // spotifyApi.searchArtists('search?q=')
-    const weeklyResponse = await searchSpotify('album:The+Son+(Original+Motion+Picture+Soundtrack)+artist:Hans+Zimmer&type=album');
-    console.log(weeklyResponse)
+export const getWeeklyMovies = (page, start, end) => {
+    return axios.get(`https://api.themoviedb.org/3/discover/movie?api_key=7aa5455b0e82cdcc85086f3eab92c7e5&language=en-US&sort_by=release_date.desc&include_adult=false&include_video=false&page=${page}&primary_release_date.gte=${start}&primary_release_date.lte=${end}&with_watch_monetization_types=flatrate`)
+    // return axios.get(`https://api.themoviedb.org/3/movie/now_playing?api_key=7aa5455b0e82cdcc85086f3eab92c7e5&language=en-US&page=${page}`)
+    // return axios.get(`https://api.themoviedb.org/3/movie/upcoming?api_key=7aa5455b0e82cdcc85086f3eab92c7e5&language=en-US&page=${page}`)
 };

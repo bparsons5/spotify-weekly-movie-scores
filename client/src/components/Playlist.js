@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { catchErrors } from '../js/utils';
-import { getPlaylistById, doesUserFollowPlaylist, followPlaylist, searchSpotify, getPlaylistTracks, clearPlaylist, addTracksToPlaylist, getAlbumTracks } from '../js/spotify';
+// import { getPlaylistById, doesUserFollowPlaylist, followPlaylist } from '../js/spotify';
+import { getPlaylistById, doesUserFollowPlaylist, followPlaylist, searchSpotify, getPlaylistTracks, clearPlaylist, addTracksToPlaylist, getAlbumTracks, getGenres } from '../js/spotify';
+import { getWeeklyMovies } from '../js/weekly'
 // import { weekly } from '../js/weekly';
 import axios from 'axios';
 import '../css/playlist.css';
@@ -58,7 +60,6 @@ const calculateDateAdded = (date) => {
 
     let difference = (now.getTime() - inputDate.getTime()) / 1000
 
-    // if less than an hour
     if(difference < 60) {
         date_returned = difference + (difference > 1 ?  ' seconds ago' :  ' second ago')
     } else if(difference < 3600) {
@@ -82,27 +83,105 @@ const Playlist = ({ user }) => {
     const [playlistOwner, setPlaylistOwner] = useState(null)
     const [searchData, setSearchData] = useState(null);
     const [search, setSearch] = useState(null);
+    const [movies, setMovies] = useState(null);
+    const [moviesData, setMoviesData] = useState(null);
+    const [titles, setTitles] = useState(null);
+    const [titleIndex, setTitleIndex] = useState(null);
+    const [spotifyData, setSpotifyData] = useState(null);
+    const [spotify, setSpotify] = useState(null);
     const weeklyMovieScoresId =  '15a8yM3uV2nouNvpbeAhYl'
+    const start =  '2023-03-14'
+    const end =  '2023-03-21'
 
 
     useEffect(() => {
+
         const fetchData = async () => {
             const weeklyMovieScoresResponse = await getPlaylistById(weeklyMovieScoresId);
             setWeeklyMovieScores(weeklyMovieScoresResponse.data)
-    
-            console.log(weeklyMovieScoresResponse.data)
 
-            // get list of movies that came out
-            // search for each title
-            // filter down to that that contain the soundtrackTags
-            // add to the weekly movie scores
-            const movieTitle = '65'
-            const searchResponse = await searchSpotify(`album:${movieTitle}+tag:new&type=album`);
-            setSearchData(searchResponse.data.albums);
+            // https://www.movieinsider.com/movies/last-week
+            // $('.daily .row').toArray().map(x => x.children[1].children[0].innerText)
+
+            const movieResponse = await getWeeklyMovies(1, start, end)
+            setMoviesData(movieResponse.data)
         };
 
         catchErrors(fetchData());
     }, []);
+
+
+    // KEY LOOP FOR GETTING ALL DATA FROM SPOTIFY
+    // When searchData updates, check if there are more search to fetch
+    // then update the state variable
+    useEffect(() => {
+        if (!moviesData) {
+            return;
+        }
+
+        // Playlist endpoint only returns 20 search at a time, so we need to
+        // make sure we get ALL search by fetching the next set of search
+        const fetchMoreData = async () => {
+            if (moviesData.page < moviesData.total_pages) {
+                const { data } = await getWeeklyMovies(moviesData.page + 1, start, end);
+                setMoviesData(data);
+            }
+        };
+
+        // Use functional update to update search state variable
+        // to avoid including search as a dependency for this hook
+        // and creating an infinite loop
+        setMovies(movies => ([
+            ...movies ? movies : [],
+            ...moviesData.results
+        ]));
+
+        // Fetch next set of search as needed
+        catchErrors(fetchMoreData());
+
+    }, [moviesData]);
+    
+
+    useEffect(() => {
+        if (movies !== null && moviesData !== null) {
+            if (movies.length === moviesData.total_results) {
+                setTitles([...new Set(movies.map(x => x.title).sort())])
+                setTitleIndex(0)
+            }
+        }
+    }, [movies, moviesData]);
+
+
+    useEffect(() => {
+        if (!titles) {
+            return;
+        }
+    
+        const fetchData = async (title) => {
+            console.log(title)
+            let movieTitleStripped = title.replace(/[^a-zA-Z0-9-_]/g, ' ')
+
+            if (movieTitleStripped !== '') {
+                const searchResponse = await searchSpotify(`album:${title.replace(/[^a-zA-Z0-9-_]/g, ' ')}+tag:new&type=album`);
+
+                if (searchResponse.data.albums.items.length > 0) {
+                    console.log(searchResponse.data.albums)
+                } 
+                // else {
+                //     setSearchData(searchResponse.data.albums);
+                // }
+            }
+
+            if (titleIndex < titles.length - 1) {
+                const newIndex = await titleIndex + 1 // when updating the trigger variable, wait for it to find the new value. 
+                // setTitleIndex((t) => t + 1) // results in an infinite loop
+                setTitleIndex(newIndex)
+            }
+        };
+        
+        catchErrors(fetchData(titles[titleIndex]));
+
+    }, [titles, titleIndex]);
 
 
     // KEY LOOP FOR GETTING ALL DATA FROM SPOTIFY
@@ -136,43 +215,72 @@ const Playlist = ({ user }) => {
     }, [searchData]);
     
 
-    useEffect(() => {
-        if (search !== null && searchData !== null) {
-            if (search.length === searchData.total) {
-                // console.log(searchData) // hitting 1000 length limit
-                // console.log(search.filter(x => x ? x.album_type === 'album' : false))
+    // useEffect(() => {
+    //     if (search !== null && searchData !== null) {
+    //         if (search.length !== 0 && search.length === searchData.total) {
+    //             // console.log(searchData) // hitting 1000 length limit
+    //             // console.log(search.filter(x => x ? x.album_type === 'album' : false))
                 
-                const soundtrackTags = [
-                    'OST',
-                    'Score',
-                    'Soundtrack',
-                ]
+    //             console.log(search)
+    //             if (titleIndex < titles.length) {
+    //                 setTitleIndex(t => t + 1) // ready to loop through next title
+    //             }
 
-                console.log(search)
+    //             // const soundtrackTags = [
+    //             //     ' OST',
+    //             //     'score',
+    //             //     'Score',
+    //             //     'soundtrack',
+    //             //     'Soundtrack',
+    //             //     'movie',
+    //             //     'Movie',
+    //             //     'film',
+    //             //     'Film',
+    //             // ]
 
-                // add to playlist
-                // let albumId = search.filter(x => soundtrackTags.some(y => x.name.includes(y)))[0].id
-                // const add = async (albumId) => {
-                //     const albumTracksResponse = await getAlbumTracks(albumId)
-                //     addTracksToPlaylist(weeklyMovieScoresId, albumTracksResponse.data.items.map(x => x.uri).join(','))
-                // };
-                // catchErrors(add(albumId));
+    //             // setSearchData(searchResponse.data.albums.items.filter(x => soundtrackTags.some(y => x.name.includes(y))));
+                
+
+    //             // console.log(search)
+    //             // let albumsToAdd = search.filter(x => soundtrackTags.some(y => x.name.includes(y)))
+    //             // console.log(albumsToAdd)
+
+    //             // add to playlist
+    //             // let albumId = search.filter(x => soundtrackTags.some(y => x.name.includes(y)))[0].id
+    //             // const add = async (albumId) => {
+    //             //     const albumTracksResponse = await getAlbumTracks(albumId)
+    //             //     addTracksToPlaylist(weeklyMovieScoresId, albumTracksResponse.data.items.map(x => x.uri).join(','))
+    //             // };
+    //             // catchErrors(add(albumId));
 
 
-                // clear playlist
-                // const clear = async () => {
-                //     const playlistTracksResponse = await getPlaylistTracks(weeklyMovieScoresId) // max of 100 at a time
-                //     const trackList = {
-                //         tracks: []
-                //     }
-                //     playlistTracksResponse.data.items.forEach(x => trackList.tracks.push({ uri: x.track.uri }))
-                //     console.log(trackList)
-                //     clearPlaylist(weeklyMovieScoresId, trackList)
-                // };
-                // catchErrors(clear());
-            }
-        }
-    }, [search, searchData]);
+    //             // clear playlist
+    //             // const clear = async () => {
+    //             //     let playlistTracksResponse = await getPlaylistTracks(weeklyMovieScoresId) // max of 100 at a time
+    //             //     let num = 0
+    //             //     do
+    //             //     {   
+    //             //         if (num > 0) {
+    //             //             playlistTracksResponse = await axios.get(playlistTracksResponse.data.next);
+    //             //         } else {
+    //             //             num++
+    //             //         }
+    //             //         // console.log(playlistTracksResponse)
+
+    //             //         const trackList = {
+    //             //             tracks: []
+    //             //         }
+    //             //         playlistTracksResponse.data.items.forEach(x => trackList.tracks.push({ uri: x.track.uri }))
+    //             //         // console.log(trackList)
+
+    //             //         clearPlaylist(weeklyMovieScoresId, trackList)
+    //             //     } while (playlistTracksResponse.data.next !== null);
+    //             // };
+    //             // catchErrors(clear());
+
+    //         }
+    //     }
+    // }, [search, searchData]);
 
 
     useEffect(() => {
