@@ -1,6 +1,7 @@
 #panel {
     background-color: #040306;
-    min-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
     width: 300px;
     position: absolute;
     left: 0px;

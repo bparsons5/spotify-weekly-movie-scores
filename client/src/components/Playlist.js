@@ -62,7 +62,7 @@ const calculateDateAdded = (date) => {
     let difference = (now.getTime() - inputDate.getTime()) / 1000
 
     if(difference < 60) {
-        date_returned = difference + (difference > 1 ?  ' seconds ago' :  ' second ago')
+        date_returned = Math.floor(difference) + (difference > 1 ?  ' seconds ago' :  ' second ago')
     } else if(difference < 3600) {
         date_returned = Math.floor(difference / 60) + (difference > 60 * 2 ?  ' minutes ago' :  ' minute ago')
     } else if (difference < 86400) {
@@ -103,8 +103,11 @@ const Playlist = ({ user }) => {
     const end =  dateEnd.toISOString().split('T')[0]
 
     const dateStart = new Date()
-    dateStart.setDate(dateStart.getDate() - 7)
+    dateStart.setDate(dateStart.getDate() - 6) // one week ago
     const start =  dateStart.toISOString().split('T')[0]
+
+    const thisYear = parseInt(end.split('-')[0])
+    const lastYear = thisYear - 1
 
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
@@ -135,7 +138,8 @@ const Playlist = ({ user }) => {
 
         const fetchData = async () => {
             // before going through and adding albums, we must clear the playlist
-            catchErrors(clearWeeklyMovieScores());
+            // CLEAR PLAYLIST
+            // catchErrors(clearWeeklyMovieScores());
 
             const weeklyMovieScoresResponse = await getPlaylistById(weeklyMovieScoresId);
             setWeeklyMovieScores(weeklyMovieScoresResponse.data)
@@ -181,7 +185,7 @@ const Playlist = ({ user }) => {
         if (movies !== null && moviesData !== null) {
             if (movies.length === moviesData.total_results) {
                 setTitles([...new Set(movies.map(x => x.title).sort())])
-                // console.log(movies)
+                console.log([...new Set(movies.map(x => x.title).sort())])
             }
         }
     }, [movies, moviesData]);
@@ -196,7 +200,8 @@ const Playlist = ({ user }) => {
             let movieTitleStripped = title.replace(/[^a-zA-Z0-9-_]/g, ' ').trim()
 
             if (movieTitleStripped !== '') {
-                const searchResponse = await searchSpotify(`album:${title.replace(/[^a-zA-Z0-9-_]/g, ' ')}+tag:new&type=album`);
+                // const searchResponse = await searchSpotify(`album:${title.replace(/[^a-zA-Z0-9-_]/g, ' ')} ( year:${lastYear}-${thisYear}&type=album`); // no tag:new as were using US release date and some of the albums get released earlier
+                const searchResponse = await searchSpotify(`album:${title.replace(/[^a-zA-Z0-9-_]/g, ' ')} ( tag:new&type=album`);
 
                 if (searchResponse.data.albums.items.length > 0) {
                     setReturnTitles(returnTitles => ([
@@ -269,6 +274,8 @@ const Playlist = ({ user }) => {
             ...spotifyData.items
         ]));
 
+        // console.log(spotifyData.offset + ' out of ' + spotifyData.total)
+
         // Fetch next set of search as needed
         catchErrors(fetchMoreData());
 
@@ -311,9 +318,10 @@ const Playlist = ({ user }) => {
 
             // narrow down to the specific album
             let output = [] 
+            console.log(spotifyTotal)
             for (let i in spotifyTotal) {
                 if (spotifyTotal[i].length !== 0) {
-                    let albums = spotifyTotal[i].filter(x => x.name.startsWith(returnTitles[i] + ' ('))
+                    let albums = spotifyTotal[i].filter(x => x.name.toLowerCase().startsWith(returnTitles[i].toLowerCase() + ' ('))
                     if (albums.length > 0) {
                         output.push(albums)
                     }
@@ -326,19 +334,12 @@ const Playlist = ({ user }) => {
                 const albumTracksResponse = await getAlbumTracks(albumId)
                 addTracksToPlaylist(weeklyMovieScoresId, albumTracksResponse.data.items.map(x => x.uri).join(','))
             };
-            // catchErrors(add(albumId));
-
-            // ADD THE ALBUMS TO THE PLAYLIST!!!! YAY!!!!
 
             // ADD THE ALBUMS TO THE PLAYLIST!!!! YAY!!!!
             const updatePlaylist = async () => {
-                // if (output.length > 0) {
-                //     await catchErrors(clear())
-                // }
-    
                 for (let i in output) {
                     output[i].forEach(x => {
-                        catchErrors(add(x.id));
+                        // catchErrors(add(x.id));
                     })
                 }
             };
@@ -351,7 +352,7 @@ const Playlist = ({ user }) => {
             
     useEffect(() => {
         if (weeklyMovieScores !== null && user !== null) {
-            console.log(weeklyMovieScores)
+            // console.log(weeklyMovieScores)
 
             // let tableDataHeaders = ['#', 'IMG', 'TITLE', 'ALBUM', 'DURATION']
             setItems(weeklyMovieScores.tracks.items)
@@ -360,7 +361,7 @@ const Playlist = ({ user }) => {
             // make sure we get ALL playlists by fetching the next set of playlists
             const getPlaylistOwner = async () => {
                 const { data } = await axios.get(weeklyMovieScores.owner.href);
-                console.log(data)
+                // console.log(data)
                 setPlaylistOwner(data)
             };
 
@@ -454,7 +455,7 @@ const Playlist = ({ user }) => {
             <Modal.Body>
                 <h5>The Weekly Movie Scores web app executes the following steps to add soundtracks to this playlist on a weekly basis as best it can. Enjoy!</h5>
                 <ListGroup as="ol" numbered>
-                    <ListGroup.Item as="li">Ping the TMDB API to return all movies released within the past week in the US</ListGroup.Item>
+                    <ListGroup.Item as="li">Ping the TMDB API to return all movies released within the past week based on their primary release date</ListGroup.Item>
                     <ListGroup.Item as="li">Utilize Spotify's API Search Method to search for any albums that each movie title</ListGroup.Item>
                     <ListGroup.Item as="li">As spotify's search returns numerous objects, thes script goes through and filter the results on keywords like <i>'Soundtrack'</i>, <i>'Score'</i>, etc.</ListGroup.Item>
                     <ListGroup.Item as="li">A second layer of filtering is necessary to confirm the album is indeed the movie soundtrack -  this is mainly done by looking for the common structure of <i>'movie title (movie soundtrack deliniation)'</i></ListGroup.Item>
