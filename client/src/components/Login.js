@@ -12,7 +12,7 @@ import { BsSpotify } from "react-icons/bs";
 const LOGIN_URI =
   process.env.NODE_ENV !== 'production'
     ? 'http://localhost:8888/login'
-    : 'https://spotify-profile-v2.herokuapp.com/login';
+    : 'https://weeklymoviescores.herokuapp.com/login';
 
 
 const Login = () => {
