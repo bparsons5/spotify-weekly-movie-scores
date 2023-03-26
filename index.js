@@ -1,14 +1,20 @@
 require('dotenv').config()
 const express = require('express')
 const axios = require('axios')
+const path = require('path')
 
 const app = express();
-const port = 8888
 
 const authEndpoint = "https://accounts.spotify.com/authorize";
 const CLIENT_ID = process.env.CLIENT_ID
 const CLIENT_SECRET = process.env.CLIENT_SECRET
 const REDIRECT_URI = process.env.REDIRECT_URI
+const FRONTEND_URI = process.env.FRONTEND_URI;
+const PORT = process.env.PORT || 8888;
+
+
+// Priority serve any static files.
+app.use(express.static(path.resolve(__dirname, './client/build')));
 
 
 /**
@@ -94,7 +100,7 @@ app.get('/callback', (req, res) =>{
             
             const params = paramsData.toString()
 
-            res.redirect(`http://localhost:3000/?${params}`)
+            res.redirect(`${FRONTEND_URI}?${params}`)
 
         } else {
 
@@ -136,6 +142,11 @@ app.get('/refresh_token', (req, res) => {
     })
 })
 
-app.listen(port, () => {
-    console.log(`Express app listening at http://localhost:${port}`)
+// All remaining requests return the React app, so it can handle routing.
+app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, './client/build', 'index.html'));
+  });
+
+app.listen(PORT, () => {
+    console.log(`Express app listening at http://localhost:${PORT}`)
 })

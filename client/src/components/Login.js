@@ -8,6 +8,13 @@ import '../css/login.css';
 import { BsSpotify } from "react-icons/bs";
 // import { querystring } from 'querystring'
 
+
+const LOGIN_URI =
+  process.env.NODE_ENV !== 'production'
+    ? 'http://localhost:8888/login'
+    : 'https://spotify-profile-v2.herokuapp.com/login';
+
+
 const Login = () => {
     return (
         <div id="login-content">
@@ -15,7 +22,7 @@ const Login = () => {
                 <BsSpotify id='spotify-logo'></BsSpotify>
                 <h4 id='spotify-playlist'>Weekly Movie Scores</h4>
                 <p id='playlist'>SPOTIFY PLAYLIST</p>
-                <a id='spotify-login-button' className='btn spotify-button' href='http://localhost:8888/login'>LOG IN TO SPOTIFY</a>
+                <a id='spotify-login-button' className='btn spotify-button' href={LOGIN_URI}>LOG IN TO SPOTIFY</a>
             </div>
         </div>
     )
