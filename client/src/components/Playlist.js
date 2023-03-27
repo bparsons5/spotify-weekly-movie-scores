@@ -356,7 +356,7 @@ const Playlist = ({ user }) => {
             
     useEffect(() => {
         if (weeklyMovieScores !== null && user !== null) {
-            // console.log(weeklyMovieScores)
+            console.log(weeklyMovieScores)
 
             // let tableDataHeaders = ['#', 'IMG', 'TITLE', 'ALBUM', 'DURATION']
             setItems(weeklyMovieScores.tracks.items)
@@ -451,6 +451,7 @@ const Playlist = ({ user }) => {
                             <p>PUBLIC PLAYLIST</p>
                             <a id='playlist-title' target='_blank' rel="noreferrer" href={weeklyMovieScores ? weeklyMovieScores.external_urls.spotify : '#'}>{weeklyMovieScores ? weeklyMovieScores.name : ''}</a>
                             <div id='playlist-meta'>
+                                <div id='playlist-description'>{weeklyMovieScores ? weeklyMovieScores.description : ''}</div>
                                 <img src={playlistOwner ? playlistOwner.images[0].url : ''} alt='meta-img'></img>
                                 <span id='playlist-owner'><a target='_blank' rel="noreferrer" href={weeklyMovieScores ? weeklyMovieScores.owner.external_urls.spotify : '#'}>{weeklyMovieScores ? weeklyMovieScores.owner.display_name : ''}</a></span>
                                 <span id='dot'><RxDotFilled></RxDotFilled></span>

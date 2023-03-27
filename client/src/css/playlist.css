@@ -147,7 +147,7 @@ and (min-device-width : 992px) {
 
     #playlist-meta {
         height: 20px;
-        margin-top: 32px;
+        margin-top: 10px;
     }
 
 
@@ -161,6 +161,11 @@ and (min-device-width : 992px) {
         height: 100%;
         border-radius: 50%;
         margin-right: 5px;
+    }
+
+    #playlist-description {
+        display: block;
+        margin-bottom: 6px;
     }
 
     #playlist-info {
