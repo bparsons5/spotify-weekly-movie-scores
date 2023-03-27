@@ -1,3 +1,260 @@
+/* X-Small */
+@media only screen 
+and (max-device-width : 991px) {
+
+    #playlist-img {
+        margin: 40px auto 20px auto;
+        width: 60vw;
+    }
+    
+    #playlist-details {
+        width: 90vw;
+        margin: auto;
+        text-align: left;
+    }
+
+    #playlist-header {
+        background-image: linear-gradient(#474646, #2a2929);
+    }
+
+    #playlist-title {
+        font-size: 6vw;
+        font-weight: 600;
+        display: block;
+        color: white;
+        text-decoration: none;
+    }
+
+    #playlist-details {
+        padding: 10px 0px;
+    }
+
+    #playlist-meta {
+        padding: 10px 0px;
+        display: inline-block;
+    }
+
+    .meta-meta img {
+        height: 20px;
+        border-radius: 50%;
+        margin-right: 5px;
+    }
+
+    #playlist-info {
+        margin-top: 10px;
+        font-size: 25px;
+    }
+
+    .playlist-track {
+        color: #909090;
+        margin: auto;
+        width: 90vw;
+        text-align: left;
+    }
+
+    .track-title {
+        width: 100%;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        line-height: 100%;
+        padding: 0px !important;
+        margin: 3px 0px 0px 0px !important;
+    }
+
+    .track-title h6 {
+        color: white;
+        margin: 3px 0px 0px 0px;
+        font-size: 15px;
+        padding: 0px !important;
+    }
+
+    .track-title p {
+        margin: 0px !important;
+        padding: 0px !important;
+        font-size: 13px;
+    }
+
+    .track-img {
+        height: 40px;
+        width: 40px;
+        margin-right: 15px;
+        float: left;
+        margin-top: 5px;
+    }
+
+    .playlist-track span {
+        width: 80%;
+        display: inline-block;
+        padding: 0px 15px;
+        font-size: 14px;
+        line-height: 30px;
+        overflow: hidden;
+        vertical-align: middle;
+    }
+
+    .track-duration {
+        float: right;
+        margin-top: 14px;
+        margin-right: 10px;
+    }
+
+    #add-playlist {
+        display: inline-block;
+        float: right;
+        margin-top: 45px;
+    }
+
+    #playlist-body {
+        margin-top: 10px;
+        margin-bottom: 20px;
+    }
+}
+
+/* Large */
+@media only screen 
+and (min-device-width : 992px) {
+
+    #playlist-img {
+        display: flex;
+        float: left;
+        width: 220px;
+    }
+    
+    #playlist-details {
+        display: inline-block;
+        width: calc(100% - 220px);
+        height: 100%;
+        text-align: left;
+        padding-left: 25px;
+    }
+
+    #playlist-header {
+        padding: 25px;
+        height: 270px;
+        background-image: linear-gradient(#474646, #2a2929);
+    }
+
+    #playlist-title {
+        font-size: 1.8em;
+        font-weight: 800;
+        height: 105px;
+        line-height: 105px;
+        display: block;
+        color: white;
+        text-decoration: none;
+    }
+
+    #playlist-meta {
+        height: 20px;
+        margin-top: 32px;
+    }
+
+
+    #playlist-meta * {
+        display: inline-block;
+        margin-bottom: 0px;
+        font-size: 12px;
+    }
+
+    #playlist-meta img {
+        height: 100%;
+        border-radius: 50%;
+        margin-right: 5px;
+    }
+
+    #playlist-info {
+        position: relative;
+        float: right;
+        right: 25px;
+        font-size: 25px;
+    }
+
+    .track-number {
+        width: 5%;
+    }
+
+    .track-title {
+        width: 35%;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        line-height: 100%;
+        padding: 0px !important;
+        margin: 3px 0px 0px 0px !important;
+    }
+
+    .track-title h6 {
+        color: white;
+        margin: 3px 0px 0px 0px;
+        font-size: 15px;
+        padding: 0px !important;
+    }
+
+    .track-title p {
+        margin: 0px !important;
+        padding: 0px !important;
+        font-size: 13px;
+    }
+
+    .track-img {
+        height: 40px;
+        width: 40px;
+        margin-right: 15px;
+        float: left;
+        margin-top: 5px;
+    }
+
+    .track-album {
+        width: 30%;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        line-height: 100%;
+    }
+
+    .track-date {
+        width: 22%;
+    }
+
+    .track-duration {
+        width: 8%;
+        text-align: right !important;
+    }
+
+    .playlist-track {
+        color: #909090;
+        margin: 2px 40px;
+        text-align: left;
+    }
+
+    .playlist-track span {
+        display: inline-block;
+        padding: 0px 15px;
+        font-size: 14px;
+        line-height: 30px;
+        overflow: hidden;
+        vertical-align: middle;
+    }
+
+
+    #add-playlist {
+        text-align: left;
+        margin: 25px;
+        display: block;
+    }
+
+    #playlist-body {
+        margin-bottom: 65px;
+    }
+}
+
+
+.meta-meta {
+    margin-bottom: 0px;
+    font-size: 12px;
+}
+
 #playlist-wrapper {
     display: flex;
     /* height: calc(100vh);  */
@@ -9,26 +266,6 @@
     text-align: center;
 }
 
-#playlist-header {
-    padding: 25px;
-    height: 270px;
-    background-image: linear-gradient(#474646, #2a2929);
-}
-
-#playlist-img {
-    display: flex;
-    float: left;
-    width: 220px;
-}
-
-#playlist-details {
-    display: inline-block;
-    width: calc(100% - 220px);
-    height: 100%;
-    text-align: left;
-    padding-left: 25px;
-}
-
 #playlist-details p {
     margin-top: 40px;
     font-size: 10px;
@@ -36,25 +273,9 @@
     margin-bottom: 0px;
 }
 
-#playlist-info {
-    position: absolute;
-    right: 25px;
-    font-size: 25px;
-}
-
 #playlist-info:hover {
     color: #1db954;
     cursor: pointer;
-}
-
-#playlist-title {
-    font-size: 1.8em;
-    font-weight: 800;
-    height: 105px;
-    line-height: 105px;
-    display: block;
-    color: white;
-    text-decoration: none;
 }
 
 #playlist-title:hover {
@@ -69,20 +290,6 @@
 @media all and (min-width: 1400px) {  #playlist-title  { font-size:4.5em;  } }
 @media all and (min-width: 1500px) {  #playlist-title  { font-size:5em;  } }
 
-#playlist-body {
-    margin-bottom: 65px;
-}
-
-#playlist-meta {
-    height: 20px;
-    margin-top: 32px;
-}
-
-#playlist-meta * {
-    display: inline-block;
-    margin-bottom: 0px;
-    font-size: 12px;
-}
 
 #playlist-owner {
     font-weight: 600;
@@ -97,26 +304,12 @@
     color: #1db954 !important;
 }
 
-
-
-#playlist-meta img {
-    height: 100%;
-    border-radius: 50%;
-    margin-right: 5px;
-}
-
 #track-total {
     margin-right: 5px;
 }
 
 #play-time {
     color: #b7b7b7;
-}
-
-#add-playlist {
-    text-align: left;
-    margin: 25px;
-    display: block;
 }
 
 #unclicked {
@@ -155,21 +348,6 @@
     font-size: 18px;
 }
 
-.playlist-track {
-    color: #909090;
-    margin: 2px 40px;
-    text-align: left;
-}
-
-.playlist-track span {
-    display: inline-block;
-    padding: 0px 15px;
-    font-size: 14px;
-    line-height: 30px;
-    overflow: hidden;
-    vertical-align: middle;
-}
-
 .playlist-track:hover {
     background-color: #2c2c2c;
     color: white !important;
@@ -186,59 +364,18 @@
     text-decoration: underline;
 }
 
-.track-number {
-    width: 5%;
-}
-
-.track-title {
-    width: 40%;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-    line-height: 100%;
-    padding: 0px !important;
-    margin: 3px 0px 0px 0px !important;
-}
-
-.track-title h6 {
-    color: white;
-    margin: 3px 0px 0px 0px;
-    font-size: 15px;
-    padding: 0px !important;
-}
-
-.track-title p {
-    margin: 0px !important;
-    padding: 0px !important;
-    font-size: 13px;
-}
-
-.track-img {
-    height: 40px;
-    width: 40px;
-    margin-right: 15px;
-    float: left;
-    margin-top: 5px;
-}
-
-.track-album {
-    width: 25%;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-    line-height: 100%;
-}
-
-.track-date {
-    width: 22%;
-}
-
-.track-duration {
-    width: 8%;
-    text-align: right !important;
-}
-
 .modal-body h5 {
     text-align: center;
     margin-bottom: 18px;
+    color: #1db954 !important;
+}
+
+.modal-content * {
+    background-color: #474646 !important;
+    color: white !important;
+    border-color: #2a2929 !important;
+}
+
+.modal-backdrop.show {
+    opacity: .5 !important;
 }

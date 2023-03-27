@@ -5,6 +5,7 @@ import { BsSpotify } from "react-icons/bs";
 import { MdOutlineLink } from "react-icons/md";
 import User from './User'
 import Playlist from './Playlist'
+import { Row, Col } from 'react-bootstrap'
 import '../css/dashboard.css';
 
 const Dashboard = ({ accessToken, logout }) => {
@@ -25,8 +26,8 @@ const Dashboard = ({ accessToken, logout }) => {
   }, [])
 
   return (
-    <div id='dashboard'>
-      <div id='panel'> 
+    <Row id='dashboard'>
+      <Col id='panel' className='dash-col' xs={12} lg={3}> 
         <a id='spotify-link' target='_blank' rel="noreferrer" href='https://open.spotify.com/'><BsSpotify id='panel-spotify-logo'></BsSpotify></a>
         <div id='panel-spotify-banner'>
           <button id='panel-spotify-log-out' onClick={logout}>LOG OUT</button>
@@ -36,12 +37,11 @@ const Dashboard = ({ accessToken, logout }) => {
             <div><p id='developed-by'>developed by</p><a id='bp-link' target='_blank' rel="noreferrer" href='https://www.rbrettparsons.xyz'>brett parsons<MdOutlineLink id='bp-link-icon'></MdOutlineLink></a></div>
             <div><p id='powered-by'>powered by</p><a id='tmdb' target='_blank' rel="noreferrer" href='https://www.themoviedb.org/'><img id='tmdb-img' src='https://www.themoviedb.org/assets/2/v4/logos/v2/blue_square_2-d537fb228cf3ded904ef09b136fe3fec72548ebc1fea3fbbd1ad9e36364db38b.svg' alt='tmdb'></img></a></div>
         </div>
-      </div>
-      {/* get rid of main */}
-      <div id='main'>
+      </Col>
+      <Col id='main' className='dash-col' xs={12} lg={9}>
         <Playlist user={user}></Playlist>
-      </div>
-    </div>
+      </Col>
+    </Row>
   );
 };
 

@@ -1,13 +1,69 @@
-#panel {
-    background-color: #040306;
-    height: 100vh;
-    overflow: hidden;
-    width: 300px;
-    position: absolute;
-    left: 0px;
+
+#dashboard {
+    max-width: 100vw;
+    margin: 0px;
+}
+
+
+/* X-Small */
+@media only screen 
+and (max-device-width : 991px) {
+
+    .xsmall {
+        display: block;
+    }
+    .large {
+        display: none;
+    }
+
+    #panel {
+        background-color: #040306;
+        overflow: hidden;
+        padding-bottom: 20px;
+    }
+}
+
+
+/* Large */
+@media only screen 
+and (min-device-width : 992px) {
+
+    .xsmall {
+        display: none;
+    }
+    .large {
+        display: block;
+    }
+
+    #panel {
+        background-color: #040306;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    #main {
+        /* left: 300px; */
+        /* position: absolute; */
+        /* width: calc(100vw - 300px); */
+        height: 100vh;
+        overflow-y: scroll;
+    }
+
+}
+
+.dash-col {
+    padding-left: 0px !important;
+    padding-right: 0px !important;
 }
 
 #panel-spotify-logo {
+    height: 45px;
+    width: 45px;
+    margin: 20px;
+    color: #1db954;
+}
+
+#panel.col-sm-3 #panel-spotify-logo {
     height: 45px;
     width: 45px;
     margin: 20px;
@@ -35,14 +91,6 @@
 #panel-spotify-log-out:hover {
     background-color: white !important;
     color: black !important;
-}
-
-#main {
-    left: 300px;
-    position: absolute;
-    width: calc(100vw - 300px);
-    height: 100vh;
-    overflow-y: scroll;
 }
 
 #authentication-code {
@@ -109,4 +157,44 @@
 
 #bp-link-icon {
     margin-left: 5px;
+}
+
+
+
+
+
+
+/* iPads (landscape) ----------- */
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px) 
+and (orientation : landscape) {
+    /* Styles */
+}
+
+/* iPads (portrait) ----------- */
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px) 
+and (orientation : portrait) {
+    /* Styles */
+}
+
+/* Desktops and laptops ----------- */
+@media only screen 
+and (min-width : 1224px) {
+    /* Styles */
+}
+
+/* Large screens ----------- */
+@media only screen 
+and (min-width : 1824px) {
+    /* Styles */
+}
+
+/* iPhone 4 ----------- */
+@media
+only screen and (-webkit-min-device-pixel-ratio : 1.5),
+only screen and (min-device-pixel-ratio : 1.5) {
+    /* Styles */
 }
