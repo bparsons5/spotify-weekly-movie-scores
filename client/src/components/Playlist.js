@@ -4,6 +4,7 @@ import { getPlaylistById, doesUserFollowPlaylist, followPlaylist, searchSpotify,
 import { getWeeklyMovies } from '../js/weekly'
 import axios from 'axios';
 import '../css/playlist.css';
+import blankprofile from '../images/blank-profile.png'
 import { BsThreeDots } from "react-icons/bs";
 import { RxDotFilled } from "react-icons/rx";
 import { TbClockHour3 } from "react-icons/tb";
@@ -406,12 +407,12 @@ const Playlist = ({ user }) => {
 
                 <div className='xsmall'>
                     <div id='playlist-header'>
-                        <img id='playlist-img' src={weeklyMovieScores ? (weeklyMovieScores.images.length > 0 ? weeklyMovieScores.images[0].url : blank_playlist) : ''} alt='playlist-img'></img>
+                        <img id='playlist-img' src={weeklyMovieScores ? (weeklyMovieScores.images.length > 0 ? weeklyMovieScores.images[0].url : blank_playlist) : blank_playlist} alt='playlist-img'></img>
                         <div id='playlist-details'>
                             <a id='playlist-title' target='_blank' rel="noreferrer" href={weeklyMovieScores ? weeklyMovieScores.external_urls.spotify : '#'}>{weeklyMovieScores ? weeklyMovieScores.name : ''}</a>
                             <div id='playlist-meta'>
                                 <div className='meta-meta'>
-                                    <img src={playlistOwner ? playlistOwner.images[0].url : ''} alt='meta-img'></img>
+                                    <img src={playlistOwner ? (playlistOwner.images.length > 0 ? playlistOwner.images[0].url : blankprofile) : blankprofile} alt='meta-img'></img>
                                     <span id='playlist-owner'><a target='_blank' rel="noreferrer" href={weeklyMovieScores ? weeklyMovieScores.owner.external_urls.spotify : '#'}>{weeklyMovieScores ? weeklyMovieScores.owner.display_name : ''}</a></span>
                                 </div>
                                 <div className='meta-meta'>
@@ -445,14 +446,14 @@ const Playlist = ({ user }) => {
 
                 <div className='large'>
                     <div id='playlist-header'>
-                        <img id='playlist-img' src={weeklyMovieScores ? (weeklyMovieScores.images.length > 0 ? weeklyMovieScores.images[0].url : blank_playlist) : ''} alt='playlist-img'></img>
+                        <img id='playlist-img' src={weeklyMovieScores ? (weeklyMovieScores.images.length > 0 ? weeklyMovieScores.images[0].url : blank_playlist) : blank_playlist} alt='playlist-img'></img>
                         <div id='playlist-details'>
                             <FiInfo id='playlist-info' onClick={handleShow}></FiInfo>
                             <p>PUBLIC PLAYLIST</p>
                             <a id='playlist-title' target='_blank' rel="noreferrer" href={weeklyMovieScores ? weeklyMovieScores.external_urls.spotify : '#'}>{weeklyMovieScores ? weeklyMovieScores.name : ''}</a>
                             <div id='playlist-meta'>
                                 <div id='playlist-description'>{weeklyMovieScores ? weeklyMovieScores.description : ''}</div>
-                                <img src={playlistOwner ? playlistOwner.images[0].url : ''} alt='meta-img'></img>
+                                <img src={playlistOwner ? (playlistOwner.images.length > 0 ? playlistOwner.images[0].url : blankprofile) : blankprofile} alt='meta-img'></img>
                                 <span id='playlist-owner'><a target='_blank' rel="noreferrer" href={weeklyMovieScores ? weeklyMovieScores.owner.external_urls.spotify : '#'}>{weeklyMovieScores ? weeklyMovieScores.owner.display_name : ''}</a></span>
                                 <span id='dot'><RxDotFilled></RxDotFilled></span>
                                 {weeklyMovieScores ? <span id='followers-total'>{weeklyMovieScores.followers.total > 1 ? weeklyMovieScores.followers.total + ' likes' : weeklyMovieScores.followers.total + ' like' }</span> : '' }

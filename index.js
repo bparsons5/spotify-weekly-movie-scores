@@ -2,6 +2,7 @@ require('dotenv').config()
 const express = require('express')
 const axios = require('axios')
 const path = require('path')
+const cron = require('node-cron')
 
 const app = express();
 
@@ -31,15 +32,7 @@ const generateRandomString = length => {
     return text;
   };
   
-  const stateKey = 'spotify_auth_state';
-
-
-app.get('/', (req, res) =>{
-    res.json({
-        name: 'Brett',
-        content: true
-    })
-})
+const stateKey = 'spotify_auth_state';
 
 app.get('/login', (req, res) =>{
     const state = generateRandomString(16)
@@ -101,6 +94,11 @@ app.get('/callback', (req, res) =>{
             const params = paramsData.toString()
 
             res.redirect(`${FRONTEND_URI}?${params}`)
+
+            // cron.schedule("*/15 * * * * *", function () {
+            //     console.log("running a task every 15 seconds");
+            //     console.log(paramsData)
+            // });
 
         } else {
 

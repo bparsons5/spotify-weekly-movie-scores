@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { catchErrors } from '../js/utils';
+import { catchErrors, catchInitialErrors } from '../js/utils';
 import { getCurrentUser, getUserPlaylists } from '../js/spotify';
 import { BsSpotify } from "react-icons/bs";
 import { MdOutlineLink } from "react-icons/md";
@@ -11,17 +11,27 @@ import '../css/dashboard.css';
 const Dashboard = ({ accessToken, logout }) => {
   const [user, setUser] = useState(null)
   const [playlistCount, setPlaylistCount] = useState(null)
+  console.log('here')
+  console.log(accessToken)
 
   useEffect(() => {
     const fetchData = async () => {
       const userResponse = await getCurrentUser();
+
+      console.log(userResponse.error)
+
+      if (userResponse === null) {
+        console.log('logout')
+        logout()
+      }
+
       setUser(userResponse.data)
 
       const playlistResponse = await getUserPlaylists();
       setPlaylistCount(playlistResponse.data.total)
     }
     
-    catchErrors(fetchData())
+    catchInitialErrors(fetchData(), logout)
 
   }, [])
 

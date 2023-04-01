@@ -3,8 +3,6 @@ import blankprofile from '../images/blank-profile.png'
 import '../css/user.css';
 
 const User = ({ user, playlistCount }) => {
-    console.log(user)
-
     return (
         <div id='user-wrapper'>
             <div id='user-content'>
