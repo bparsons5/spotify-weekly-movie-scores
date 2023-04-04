@@ -22,7 +22,8 @@ const Login = () => {
                 <BsSpotify id='spotify-logo'></BsSpotify>
                 <h4 id='spotify-playlist'>Weekly Movie Scores</h4>
                 <p id='playlist'>SPOTIFY PLAYLIST</p>
-                <a id='spotify-login-button' className='btn spotify-button' href={LOGIN_URI}>LOG IN TO SPOTIFY</a>
+                <p id='description'>A <i><b>Third-Party</b></i> Web App that uses the Spotify API to render the playlist</p>
+                <a id='spotify-login-button' className='btn spotify-button' href={LOGIN_URI}>LOG IN <i id='via'>VIA</i> SPOTIFY</a>
             </div>
         </div>
     )

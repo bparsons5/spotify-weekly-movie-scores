@@ -501,7 +501,7 @@ const Playlist = ({ user }) => {
                 <Modal.Title>Weekly Movie Scores Info</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <h5>The Weekly Movie Scores web app executes the following steps to add soundtracks to this playlist on a weekly basis as best it can. Enjoy!</h5>
+                <h5>A <i><b>Third-Party</b></i> Web App executes the following steps to add soundtracks to this playlist on a weekly basis as best it can. Enjoy!</h5>
                 <ListGroup as="ol" numbered>
                     <ListGroup.Item as="li">Ping the TMDB API to return all movies released within the past week based on their primary release date</ListGroup.Item>
                     <ListGroup.Item as="li">Utilize Spotify's API Search Method to search for any albums that each movie title</ListGroup.Item>

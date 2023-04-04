@@ -34,3 +34,18 @@
     color: white;
     background-color: #2fc463;
 }
+
+#description {
+    margin-bottom: 40px;
+    max-width: 300px;
+    color: grey;
+}
+
+#via {
+    color: #0e7432;
+    font-size: 12px;
+    vertical-align: middle;
+    line-height: 12px;
+    display: inline-block;
+    padding-bottom: 2px;
+}

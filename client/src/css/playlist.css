@@ -375,10 +375,18 @@ and (min-device-width : 992px) {
     color: #1db954 !important;
 }
 
+.modal-body b {
+    color: #1db954 !important;
+}
+
 .modal-content * {
     background-color: #474646 !important;
     color: white !important;
     border-color: #2a2929 !important;
+}
+
+.modal-backdrop.show {
+    opacity: .5 !important;
 }
 
 .modal-backdrop.show {
