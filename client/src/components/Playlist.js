@@ -358,22 +358,25 @@ const Playlist = ({ user }) => {
     useEffect(() => {
         if (weeklyMovieScores !== null && user !== null) {
             console.log(weeklyMovieScores)
+            console.log(user)
 
             // let tableDataHeaders = ['#', 'IMG', 'TITLE', 'ALBUM', 'DURATION']
             setItems(weeklyMovieScores.tracks.items)
 
             // Playlist endpoint only returns 20 playlists at a time, so we need to
             // make sure we get ALL playlists by fetching the next set of playlists
-            const getPlaylistOwner = async () => {
+            const fetchData = async () => {
                 const { data } = await axios.get(weeklyMovieScores.owner.href);
                 // console.log(data)
                 setPlaylistOwner(data)
+
+                // see if playlist is already added
+                const followBoolean = await doesUserFollowPlaylist(weeklyMovieScores.id, user.id);
+                setClicked(followBoolean.data[0])
             };
 
-            catchErrors(getPlaylistOwner());
+            catchErrors(fetchData());
 
-            // see if playlist is already added
-            setClicked(doesUserFollowPlaylist(weeklyMovieScores.id, user.id))
         }
 
     }, [ weeklyMovieScores, user ])

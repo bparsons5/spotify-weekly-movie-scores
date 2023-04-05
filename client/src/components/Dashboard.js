@@ -11,14 +11,16 @@ import '../css/dashboard.css';
 const Dashboard = ({ accessToken, logout }) => {
   const [user, setUser] = useState(null)
   const [playlistCount, setPlaylistCount] = useState(null)
-  console.log('here')
-  console.log(accessToken)
+  // console.log('here')
+  // console.log(accessToken)
 
   useEffect(() => {
     const fetchData = async () => {
       const userResponse = await getCurrentUser();
 
-      console.log(userResponse.error)
+      if (userResponse.error !== undefined) {
+        console.log(userResponse.error)
+      }
 
       if (userResponse === null) {
         console.log('logout')
