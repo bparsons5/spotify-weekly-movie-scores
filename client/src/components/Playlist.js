@@ -48,12 +48,12 @@ const calculatePlayTimeStamp = (playTime) => {
         let min = Math.floor(remainder / 60000)
         remainder = playTime % 60000
         let sec = Math.floor(remainder / 1000)
-        time = hours + ':' + (min === 0 ? '00' : min) + ':' + (sec === 0 ? '00' : sec)
+        time = hours + ':' + (min < 10 ? '0' + min : min) + ':' + (sec < 10 ? '0' + sec : sec)
     } else {
         let min = Math.floor(playTime / 60000)
         let remainder = playTime % 60000
         let sec = Math.floor(remainder / 1000)
-        time = min + ':' + (sec === 0 ? '00' : sec)
+        time = min + ':' + (sec < 10 ? '0' + sec : sec)
     }
     return time
 }
