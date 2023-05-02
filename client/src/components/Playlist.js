@@ -294,7 +294,7 @@ const Playlist = ({ user }) => {
         if (spotifyAllAlbums.length === spotifyData.total) {
 
             const soundtrackTags = [
-                ' OST',
+                ' OST', // leave space at front so it doesn't hit on words like 'post'
                 'score',
                 'Score',
                 'soundtrack',
@@ -361,6 +361,9 @@ const Playlist = ({ user }) => {
             console.log(user)
 
             // let tableDataHeaders = ['#', 'IMG', 'TITLE', 'ALBUM', 'DURATION']
+
+            // needs to be updated to grab the next set of 100 tracks
+            let itemsData = weeklyMovieScores.tracks.items
             setItems(weeklyMovieScores.tracks.items)
 
             // Playlist endpoint only returns 20 playlists at a time, so we need to
