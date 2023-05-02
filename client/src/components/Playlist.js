@@ -85,6 +85,7 @@ const Playlist = ({ user }) => {
     const [weeklyMovieScores, setWeeklyMovieScores] = useState(null)
     const [clicked, setClicked] = useState(false)
     const [items, setItems] = useState([])
+    const [itemsData, setItemsData] = useState(null)
     const [playTimeString, setPlayTimeString] = useState(null)
     const [playlistOwner, setPlaylistOwner] = useState(null)
     
@@ -360,11 +361,7 @@ const Playlist = ({ user }) => {
             console.log(weeklyMovieScores)
             console.log(user)
 
-            // let tableDataHeaders = ['#', 'IMG', 'TITLE', 'ALBUM', 'DURATION']
-
-            // needs to be updated to grab the next set of 100 tracks
-            let itemsData = weeklyMovieScores.tracks.items
-            setItems(weeklyMovieScores.tracks.items)
+            setItemsData(weeklyMovieScores.tracks)
 
             // Playlist endpoint only returns 20 playlists at a time, so we need to
             // make sure we get ALL playlists by fetching the next set of playlists
@@ -383,6 +380,30 @@ const Playlist = ({ user }) => {
         }
 
     }, [ weeklyMovieScores, user ])
+
+    useEffect(() => {
+        if (weeklyMovieScores !== null && itemsData !== null) {
+            console.log(itemsData)
+            // setItems(itemsData.items)
+
+            const fetchItemsData = async () => {
+                if ((weeklyMovieScores.tracks.offset + 1 * weeklyMovieScores.tracks.limit) < weeklyMovieScores.tracks.total) {
+                    const { data } = await axios.get(itemsData.next);
+                    console.log(data)
+                    setItemsData(data);
+                }
+            };
+
+            setItems(items => ([
+                ...items ? items : itemsData.items,
+                ...itemsData.items
+            ]));
+    
+            // Fetch all items - this is to account for more than 100 tracks
+            catchErrors(fetchItemsData());
+        }
+
+    }, [ weeklyMovieScores, itemsData ])
 
     useEffect(() => {
         if (items.length > 0) {
