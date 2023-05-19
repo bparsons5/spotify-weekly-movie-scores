@@ -101,6 +101,10 @@ const Playlist = ({ user }) => {
     const [spotifyData, setSpotifyData] = useState(null);
     const [spotifyAllAlbums, setSpotifyAllAlbums] = useState(null);
     const [spotifyTotal, setSpotifyTotal] = useState(null);
+    const [spotifyAlbum, setSpotifyAlbum] = useState(null);
+    const [spotifyInterumAlbum, setSpotifyInterumAlbum] = useState(null);
+    const [spotifyAllAlbumTracks, setSpotifyAllAlbumTracks] = useState([]);
+    const [spotifyAllAlbumTracksString, setSpotifyAllAlbumTracksString] = useState(null);
     const [albumsToAdd, setAlbumsToAdd] = useState(null);
 
     const weeklyMovieScoresId =  '15a8yM3uV2nouNvpbeAhYl'
@@ -295,15 +299,15 @@ const Playlist = ({ user }) => {
         if (spotifyAllAlbums.length === spotifyData.total) {
 
             const soundtrackTags = [
-                ' OST', // leave space at front so it doesn't hit on words like 'post'
-                'score',
-                'Score',
-                'soundtrack',
-                'Soundtrack'
+                'ost',
+                'movie score',
+                'original score',
+                'motion picture soundtrack',
+                'soundtrack from the netflix film'
             ]
             
             // filter to soundtracks
-            let actualAlbums = spotifyAllAlbums.filter((x) => soundtrackTags.some(y => { if (x) { return (x.name.includes(y)) } }));
+            let actualAlbums = spotifyAllAlbums.filter((x) => soundtrackTags.some(y => { if (x) { return (x.name.toLowerCase().includes(y)) } }));
 
             setSpotifyTotal(spotifyTotal => ([
                 ...spotifyTotal ? spotifyTotal : [],
@@ -315,6 +319,7 @@ const Playlist = ({ user }) => {
         }
     }, [spotifyAllAlbums, spotifyData, returnTitles]);
 
+
     useEffect(() => {
         if (!spotifyTotal) {
             return;
@@ -325,11 +330,33 @@ const Playlist = ({ user }) => {
             // narrow down to the specific album
             let output = [] 
             console.log(spotifyTotal)
+            console.log(returnTitles)
             for (let i in spotifyTotal) {
                 if (spotifyTotal[i].length !== 0) {
-                    let albums = spotifyTotal[i].filter(x => x.name.toLowerCase().startsWith(returnTitles[i].toLowerCase() + ' ('))
-                    if (albums.length > 0) {
-                        output.push(albums)
+                    let album = spotifyTotal[i].filter(x => { 
+                        // lowercase and weird '
+                        let spotifyTitle = x.name.toLowerCase().replace("’", "'")
+                        let tmdbTitle = returnTitles[i].toLowerCase().replace("’", "'")
+
+                        // eliminate The and A from titles before comparing (and spaces?)
+                        spotifyTitle = spotifyTitle.replace(/a |the | /g, '')
+                        tmdbTitle = tmdbTitle.replace(/a |the | /g, '')
+
+                        // handle volume vs vol. differences
+                        if (tmdbTitle.includes('volume')) {
+                            if (spotifyTitle.startsWith(tmdbTitle + ' (')) {
+                                return spotifyTitle.startsWith(tmdbTitle + ' (')
+                            } else if (spotifyTitle.replace("volume", "vol.").startsWith(tmdbTitle.replace("volume", "vol.") + '(')) {
+                                return spotifyTitle.replace("volume", "vol.").startsWith(tmdbTitle.replace("volume", "vol.") + '(')
+                            }
+                        } else {
+                            return spotifyTitle.startsWith(tmdbTitle + '(')
+                        }
+                    })
+                    console.log(album)
+                    if (album.length > 0) {
+                        // output.push(album) // fast x scenario where there were 2 of the same album
+                        output.push(album[0])
                     }
                 }
             }
@@ -337,16 +364,36 @@ const Playlist = ({ user }) => {
 
             // add to playlist
             const add = async (albumId) => {
+                // need to go through all the pages of songs. albums with more than 20 songs cut off at 20
+
                 const albumTracksResponse = await getAlbumTracks(albumId)
-                addTracksToPlaylist(weeklyMovieScoresId, albumTracksResponse.data.items.map(x => x.uri).join(','))
+                // setSpotifyAlbum(albumTracksResponse.data)
+                console.log(albumTracksResponse)
+
+                const addNext = async (inputData) => {
+                    console.log(inputData.items)
+
+                    // ADD THE ALBUMS TO THE PLAYLIST!!!! YAY!!!!
+                    // await addTracksToPlaylist(weeklyMovieScoresId, inputData.items.map(x => x.uri).join(','))
+
+                    if (inputData.next) {
+                        const { data } = await axios.get(inputData.next);
+                        console.log(data)
+                        addNext(data)
+                    }
+                }
+
+                await addNext(albumTracksResponse.data)
             };
 
-            // ADD THE ALBUMS TO THE PLAYLIST!!!! YAY!!!!
             const updatePlaylist = async () => {
                 for (let i in output) {
-                    output[i].forEach(x => {
-                        // catchErrors(add(x.id));
-                    })
+
+                    catchErrors(await add(output[i].id));
+
+                    // fast x scenario where there were 2 of the same album
+                    // output[i].forEach(x => {
+                    // })
                 }
             };
             updatePlaylist()
@@ -355,6 +402,7 @@ const Playlist = ({ user }) => {
         }
 
     }, [spotifyTotal, spotify, returnTitles])
+
             
     useEffect(() => {
         if (weeklyMovieScores !== null && user !== null) {
