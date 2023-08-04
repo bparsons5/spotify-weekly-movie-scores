@@ -81,7 +81,7 @@ const calculateDateAdded = (date) => {
 }
 
 
-const Playlist = ({ user }) => {
+const PlaylistUpdate = ({ user }) => {
     const [weeklyMovieScores, setWeeklyMovieScores] = useState(null)
     const [clicked, setClicked] = useState(false)
     const [items, setItems] = useState([])
@@ -149,7 +149,7 @@ const Playlist = ({ user }) => {
         const fetchData = async () => {
             // before going through and adding albums, we must clear the playlist
             // CLEAR PLAYLIST
-            // catchErrors(clearWeeklyMovieScores());
+            catchErrors(clearWeeklyMovieScores());
 
             const weeklyMovieScoresResponse = await getPlaylistById(weeklyMovieScoresId);
             setWeeklyMovieScores(weeklyMovieScoresResponse.data)
@@ -375,7 +375,7 @@ const Playlist = ({ user }) => {
                     console.log(inputData.items)
 
                     // ADD THE ALBUMS TO THE PLAYLIST!!!! YAY!!!!
-                    // await addTracksToPlaylist(weeklyMovieScoresId, inputData.items.map(x => x.uri).join(','))
+                    await addTracksToPlaylist(weeklyMovieScoresId, inputData.items.map(x => x.uri).join(','))
                     console.log('added chunk of album ' + albumIndex)
                     
                     if (inputData.next) {
@@ -594,4 +594,4 @@ const Playlist = ({ user }) => {
     )
 }
 
-export default Playlist
+export default PlaylistUpdate

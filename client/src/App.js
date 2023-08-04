@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from "react-route
 import { accessToken, logout } from './js/spotify';
 import Login from './components/Login'
 import Dashboard from './components/Dashboard'
+import Update from './components/Update';
 import Playlists from './components/Playlists'
 import './App.css';
 
@@ -46,6 +47,9 @@ function App() {
             }></Route>
             <Route path="/" element={
               <Dashboard accessToken={token} logout={logout}/> 
+            }></Route>
+            <Route path="/update" element={
+              <Update accessToken={token} logout={logout}/> 
             }></Route>
           </Routes>
         </Router>
