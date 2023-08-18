@@ -105,7 +105,7 @@ const PlaylistUpdate = ({ user }) => {
     const [spotifyInterumAlbum, setSpotifyInterumAlbum] = useState(null);
     const [spotifyAllAlbumTracks, setSpotifyAllAlbumTracks] = useState([]);
     const [spotifyAllAlbumTracksString, setSpotifyAllAlbumTracksString] = useState(null);
-    const [albumsToAdd, setAlbumsToAdd] = useState(null);
+    const [albumToAdd, setAlbumToAdd] = useState(null);
 
     const weeklyMovieScoresId =  '15a8yM3uV2nouNvpbeAhYl'
 
@@ -195,7 +195,7 @@ const PlaylistUpdate = ({ user }) => {
         if (movies !== null && moviesData !== null) {
             if (movies.length === moviesData.total_results) {
                 setTitles([...new Set(movies.map(x => x.title).sort())])
-                console.log([...new Set(movies.map(x => x.title).sort())])
+                //console.log([...new Set(movies.map(x => x.title).sort())])
             }
         }
     }, [movies, moviesData]);
@@ -206,7 +206,7 @@ const PlaylistUpdate = ({ user }) => {
         }
     
         const fetchData = async (title) => {
-            // console.log(title)
+            // //console.log(title)
             let movieTitleStripped = title.replace(/[^a-zA-Z0-9-_]/g, ' ').trim()
 
             if (movieTitleStripped !== '') {
@@ -245,8 +245,8 @@ const PlaylistUpdate = ({ user }) => {
 
         if (titleIndex === titles.length - 1) {
             if (spotifyIndex === 0) {
-                // console.log(returnTitles)
-                // console.log(spotify)
+                // //console.log(returnTitles)
+                // //console.log(spotify)
             }
             if (spotifyIndex < spotify.length) {
                 setSpotifyData(spotify[spotifyIndex])
@@ -267,11 +267,14 @@ const PlaylistUpdate = ({ user }) => {
         // make sure we get ALL search by fetching the next set of search
         const fetchMoreData = async () => {
             if (spotifyData.next) {
+                console.log('next')
                 const { data } = await axios.get(spotifyData.next);
+                console.log(data)
                 setSpotifyData(data.albums);
             } else {
                 // setTitleIndex((t) => t + 1) // results in an infinite loop
                 const newIndex = await spotifyIndex + 1 // when updating the trigger variable, wait for it to find the new value. 
+                console.log(newIndex)
                 setSpotifyIndex(newIndex)
             }
         };
@@ -284,7 +287,9 @@ const PlaylistUpdate = ({ user }) => {
             ...spotifyData.items
         ]));
 
-        // console.log(spotifyData.offset + ' out of ' + spotifyData.total)
+        // console.log(spotifyAllAlbums)
+
+        // //console.log(spotifyData.offset + ' out of ' + spotifyData.total)
 
         // Fetch next set of search as needed
         catchErrors(fetchMoreData());
@@ -296,11 +301,17 @@ const PlaylistUpdate = ({ user }) => {
         if (!spotifyAllAlbums) {
             return;
         }
-        
-        if (spotifyAllAlbums.length === spotifyData.total) {
+        console.log(spotifyAllAlbums)
+        console.log(spotifyData)
+
+        console.log();
+
+        // spotify's api doesn't allow calls past 100 items
+        if (spotifyAllAlbums.length === spotifyData.total || spotifyAllAlbums.length === 100) {
 
             const soundtrackTags = [
-                'ost',
+                '(ost',
+                'ost)',
                 'movie score',
                 'original score',
                 'motion picture soundtrack',
@@ -310,6 +321,8 @@ const PlaylistUpdate = ({ user }) => {
             
             // filter to soundtracks
             let actualAlbums = spotifyAllAlbums.filter((x) => soundtrackTags.some(y => { if (x) { return (x.name.toLowerCase().includes(y)) } }));
+            console.log(actualAlbums)
+            // if(actualAlbums.length > 0) setAlbumToAdd(actualAlbums)
 
             setSpotifyTotal(spotifyTotal => ([
                 ...spotifyTotal ? spotifyTotal : [],
@@ -327,12 +340,16 @@ const PlaylistUpdate = ({ user }) => {
             return;
         }
 
+        console.log(returnTitles)
+        // console.log(spotify)
+        console.log(spotifyTotal) // should be 58 . stuck on Home
+
         if (spotifyTotal.length === spotify.length) {
 
             // narrow down to the specific album
             let output = [] 
             console.log(spotifyTotal)
-            console.log(returnTitles)
+            //console.log(returnTitles)
             for (let i in spotifyTotal) {
                 if (spotifyTotal[i].length !== 0) {
                     let album = spotifyTotal[i].filter(x => { 
@@ -355,7 +372,7 @@ const PlaylistUpdate = ({ user }) => {
                             return spotifyTitle.startsWith(tmdbTitle + '(')
                         }
                     })
-                    console.log(album)
+                    //console.log(album)
                     if (album.length > 0) {
                         // output.push(album) // fast x scenario where there were 2 of the same album
                         output.push(album[0])
@@ -364,23 +381,23 @@ const PlaylistUpdate = ({ user }) => {
             }
 
             // add to playlist
-            const add = async (albumIndex, albumId) => {
+            const add = async (albumId) => {
                 // need to go through all the pages of songs. albums with more than 20 songs cut off at 20
 
                 const albumTracksResponse = await getAlbumTracks(albumId)
                 // setSpotifyAlbum(albumTracksResponse.data)
-                console.log(albumTracksResponse)
+                //console.log(albumTracksResponse)
 
                 const addNext = async (inputData) => {
-                    console.log(inputData.items)
+                    //console.log(inputData.items)
 
                     // ADD THE ALBUMS TO THE PLAYLIST!!!! YAY!!!!
                     await addTracksToPlaylist(weeklyMovieScoresId, inputData.items.map(x => x.uri).join(','))
-                    console.log('added chunk of album ' + albumIndex)
+                    //console.log('added chunk of album ' + albumIndex)
                     
                     if (inputData.next) {
                         const { data } = await axios.get(inputData.next);
-                        console.log(data)
+                        //console.log(data)
                         await addNext(data)
                     }
                 }
@@ -390,11 +407,11 @@ const PlaylistUpdate = ({ user }) => {
             };
 
             const updatePlaylist = async () => {
-                console.log(output)
+                //console.log(output)
                 for (let i in output) {
 
-                    catchErrors(await add(i, output[i].id));
-                    console.log('album ' + i + ' added')
+                    catchErrors(await add(output[i].id));
+                    //console.log('album ' + i + ' added')
                     // fast x scenario where there were 2 of the same album
                     // output[i].forEach(x => {
                     // })
@@ -410,8 +427,8 @@ const PlaylistUpdate = ({ user }) => {
             
     useEffect(() => {
         if (weeklyMovieScores !== null && user !== null) {
-            console.log(weeklyMovieScores)
-            console.log(user)
+            //console.log(weeklyMovieScores)
+            //console.log(user)
 
             setItemsData(weeklyMovieScores.tracks)
 
@@ -419,7 +436,7 @@ const PlaylistUpdate = ({ user }) => {
             // make sure we get ALL playlists by fetching the next set of playlists
             const fetchData = async () => {
                 const { data } = await axios.get(weeklyMovieScores.owner.href);
-                // console.log(data)
+                // //console.log(data)
                 setPlaylistOwner(data)
 
                 // see if playlist is already added
@@ -435,13 +452,13 @@ const PlaylistUpdate = ({ user }) => {
 
     useEffect(() => {
         if (weeklyMovieScores !== null && itemsData !== null) {
-            console.log(itemsData)
+            //console.log(itemsData)
             // setItems(itemsData.items)
 
             const fetchItemsData = async () => {
                 if ((weeklyMovieScores.tracks.offset + 1 * weeklyMovieScores.tracks.limit) < weeklyMovieScores.tracks.total) {
                     const { data } = await axios.get(itemsData.next);
-                    console.log(data)
+                    //console.log(data)
                     setItemsData(data);
                 }
             };

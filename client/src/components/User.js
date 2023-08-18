@@ -8,7 +8,7 @@ const User = ({ user, playlistCount }) => {
             <div id='user-content'>
 
                 <div className='xsmall'>
-                    <img id='user-img' src={user !== null ? (user.images.length > 0 ? user.images[0].url : blankprofile) : blankprofile} alt='user-img'></img>
+                    <img id='user-img' src={user !== null ? (user.images.length > 0 ? user.images[1].url : blankprofile) : blankprofile} alt='user-img'></img>
                     <div id='user-details'>
                         <a id='user-name' target='_blank' rel="noreferrer" href={user !== null ? user.external_urls.spotify : '/'}>{user !== null ? user.display_name : ''}</a>
                         <Row id='user-stat-row'>
@@ -28,7 +28,7 @@ const User = ({ user, playlistCount }) => {
                 </div>
 
                 <div className='large'>
-                    <img id='user-img' src={user !== null ? (user.images.length > 0 ? user.images[0].url : blankprofile) : blankprofile} alt='user-img'></img>
+                    <img id='user-img' src={user !== null ? (user.images.length > 0 ? user.images[1].url : blankprofile) : blankprofile} alt='user-img'></img>
                     <a id='user-name' target='_blank' rel="noreferrer" href={user !== null ? user.external_urls.spotify : '/'}>{user !== null ? user.display_name : ''}</a>
                     <Row id='user-stat-row'>
                         <Col className="user-stat">
