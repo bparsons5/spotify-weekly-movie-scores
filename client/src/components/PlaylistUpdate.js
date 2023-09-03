@@ -195,7 +195,7 @@ const PlaylistUpdate = ({ user }) => {
         if (movies !== null && moviesData !== null) {
             if (movies.length === moviesData.total_results) {
                 setTitles([...new Set(movies.map(x => x.title).sort())])
-                //console.log([...new Set(movies.map(x => x.title).sort())])
+                // console.log([...new Set(movies.map(x => x.title).sort())])
             }
         }
     }, [movies, moviesData]);
@@ -245,7 +245,7 @@ const PlaylistUpdate = ({ user }) => {
 
         if (titleIndex === titles.length - 1) {
             if (spotifyIndex === 0) {
-                // //console.log(returnTitles)
+                console.log(returnTitles)
                 // //console.log(spotify)
             }
             if (spotifyIndex < spotify.length) {
@@ -266,33 +266,37 @@ const PlaylistUpdate = ({ user }) => {
         // Playlist endpoint only returns 20 search at a time, so we need to
         // make sure we get ALL search by fetching the next set of search
         const fetchMoreData = async () => {
-            if (spotifyData.next) {
-                console.log('next')
-                const { data } = await axios.get(spotifyData.next);
-                console.log(data)
-                setSpotifyData(data.albums);
-            } else {
-                // setTitleIndex((t) => t + 1) // results in an infinite loop
-                const newIndex = await spotifyIndex + 1 // when updating the trigger variable, wait for it to find the new value. 
-                console.log(newIndex)
-                setSpotifyIndex(newIndex)
-            }
+            console.log('next chunk of spotify data')
+            const { data } = await axios.get(spotifyData.next);
+            setSpotifyData(data.albums);
         };
+
+        const moveOn = async () => {
+            // setTitleIndex((t) => t + 1) // results in an infinite loop
+            const newIndex = await spotifyIndex + 1 // when updating the trigger variable, wait for it to find the new value. 
+            console.log(newIndex)
+            setSpotifyIndex(newIndex)
+        }
 
         // Use functional update to update search state variable
         // to avoid including search as a dependency for this hook
         // and creating an infinite loop
-        setSpotifyAllAlbums(spotifyAllAlbums => ([
-            ...spotifyAllAlbums ? spotifyAllAlbums : [],
-            ...spotifyData.items
-        ]));
 
-        // console.log(spotifyAllAlbums)
-
-        // //console.log(spotifyData.offset + ' out of ' + spotifyData.total)
+        if (spotifyData.offset < 100) {
+            setSpotifyAllAlbums(spotifyAllAlbums => ([
+                ...spotifyAllAlbums ? spotifyAllAlbums : [],
+                ...spotifyData.items
+            ]));
+        }
 
         // Fetch next set of search as needed
-        catchErrors(fetchMoreData());
+        if (spotifyData.next && spotifyData.offset < 100) {
+            console.log(1)
+            catchErrors(fetchMoreData());
+        } else {
+            console.log(2)
+            catchErrors(moveOn());
+        }
 
     }, [spotifyData]);
     
@@ -301,13 +305,17 @@ const PlaylistUpdate = ({ user }) => {
         if (!spotifyAllAlbums) {
             return;
         }
-        console.log(spotifyAllAlbums)
+
+        console.log("spotifyData")
         console.log(spotifyData)
 
-        console.log();
+        console.log("total " + spotifyData.total)
 
-        // spotify's api doesn't allow calls past 100 items
-        if (spotifyAllAlbums.length === spotifyData.total || spotifyAllAlbums.length === 100) {
+        console.log("spotifyAllAlbums")
+        console.log(spotifyAllAlbums)
+
+        // spotify's api doesn't allow calls past 100 albums even thought he total could be higher
+        if (spotifyAllAlbums.length === spotifyData.total || spotifyAllAlbums.length === 100) { // maybe above need to skip next if offset is 100
 
             const soundtrackTags = [
                 '(ost',
@@ -321,7 +329,7 @@ const PlaylistUpdate = ({ user }) => {
             
             // filter to soundtracks
             let actualAlbums = spotifyAllAlbums.filter((x) => soundtrackTags.some(y => { if (x) { return (x.name.toLowerCase().includes(y)) } }));
-            console.log(actualAlbums)
+            // console.log(actualAlbums) // this also gets shown when console.logging spotifyTotal
             // if(actualAlbums.length > 0) setAlbumToAdd(actualAlbums)
 
             setSpotifyTotal(spotifyTotal => ([
@@ -340,9 +348,12 @@ const PlaylistUpdate = ({ user }) => {
             return;
         }
 
-        console.log(returnTitles)
-        // console.log(spotify)
-        console.log(spotifyTotal) // should be 58 . stuck on Home
+        console.log("END - spotifyTotal")
+        console.log(spotifyTotal)
+
+        // if (spotifyTotal.map(x=>x.length).reduce((partialSum, a) => partialSum + a, 0) > 0) {
+        //     console.log(spotifyTotal)
+        // }
 
         if (spotifyTotal.length === spotify.length) {
 
