@@ -581,12 +581,12 @@ const Playlist = ({ user }) => {
             </Modal.Header>
             <Modal.Body>
                 <h5>A <i><b>Third-Party</b></i> Web App executes the following steps to add soundtracks to this playlist on a weekly basis as best it can. Enjoy!</h5>
-                <ListGroup as="ol" numbered>
-                    <ListGroup.Item as="li">Ping the TMDB API to return all movies released within the past week based on their primary release date</ListGroup.Item>
-                    <ListGroup.Item as="li">Utilize Spotify's API Search Method to search for any albums that each movie title</ListGroup.Item>
-                    <ListGroup.Item as="li">As spotify's search returns numerous objects, thes script goes through and filter the results on keywords like <i>'Soundtrack'</i>, <i>'Score'</i>, etc.</ListGroup.Item>
+                <ListGroup as="ol" numbered style={{fontSize: 14}}>
+                    <ListGroup.Item as="li">Ping TMDB to return all movies released within the past week based on their primary release date</ListGroup.Item>
+                    <ListGroup.Item as="li">Utilize Spotify's API Search Method to search for albums given each movie title</ListGroup.Item>
+                    <ListGroup.Item as="li">As spotify's search returns numerous objects, the script goes through and filters the results on keywords like <i>'Soundtrack'</i>, <i>'Score'</i>, etc.</ListGroup.Item>
                     <ListGroup.Item as="li">A second layer of filtering is necessary to confirm the album is indeed the movie soundtrack -  this is mainly done by looking for the common structure of <i>'movie title (movie soundtrack deliniation)'</i></ListGroup.Item>
-                    <ListGroup.Item as="li">Once again uses the spotify API to then clear the playlist and add the last weeks movie scores</ListGroup.Item>
+                    <ListGroup.Item as="li">Once again, the spotify API then clears the playlist and adds the confirmed albums</ListGroup.Item>
                 </ListGroup>
             </Modal.Body>
         </Modal>
