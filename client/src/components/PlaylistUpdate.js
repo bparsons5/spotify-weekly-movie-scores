@@ -5,7 +5,6 @@ import { getWeeklyMovies } from '../js/weekly'
 import axios from 'axios';
 import '../css/playlist.css';
 import blankprofile from '../images/blank-profile.png'
-import { BsThreeDots } from "react-icons/bs";
 import { RxDotFilled } from "react-icons/rx";
 import { TbClockHour3 } from "react-icons/tb";
 import { FiInfo } from "react-icons/fi";
@@ -13,9 +12,6 @@ import { RiHeartAddLine, RiHeartFill } from "react-icons/ri";
 import blank_playlist from '../images/blank_playlist.png'
 import Modal from 'react-bootstrap/Modal';
 import ListGroup from 'react-bootstrap/ListGroup';
-
-import * as $ from 'jquery';
-import * as bootstrap from "bootstrap";
 
 
 const calculatePlayTimeString = (playTime) => {
@@ -206,7 +202,7 @@ const PlaylistUpdate = ({ user }) => {
         }
     
         const fetchData = async (title) => {
-            // //console.log(title)
+            console.log(title)
             let movieTitleStripped = title.replace(/[^a-zA-Z0-9-_]/g, ' ').trim()
 
             if (movieTitleStripped !== '') {

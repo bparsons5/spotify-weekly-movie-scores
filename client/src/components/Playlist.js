@@ -5,7 +5,6 @@ import { getWeeklyMovies } from '../js/weekly'
 import axios from 'axios';
 import '../css/playlist.css';
 import blankprofile from '../images/blank-profile.png'
-import { BsThreeDots } from "react-icons/bs";
 import { RxDotFilled } from "react-icons/rx";
 import { TbClockHour3 } from "react-icons/tb";
 import { FiInfo } from "react-icons/fi";
@@ -13,9 +12,6 @@ import { RiHeartAddLine, RiHeartFill } from "react-icons/ri";
 import blank_playlist from '../images/blank_playlist.png'
 import Modal from 'react-bootstrap/Modal';
 import ListGroup from 'react-bootstrap/ListGroup';
-
-import * as $ from 'jquery';
-import * as bootstrap from "bootstrap";
 
 
 const calculatePlayTimeString = (playTime) => {
@@ -88,24 +84,6 @@ const Playlist = ({ user }) => {
     const [itemsData, setItemsData] = useState(null)
     const [playTimeString, setPlayTimeString] = useState(null)
     const [playlistOwner, setPlaylistOwner] = useState(null)
-    
-    const [movies, setMovies] = useState(null);
-    const [moviesData, setMoviesData] = useState(null);
-
-    const [titleIndex, setTitleIndex] = useState(0);
-    const [titles, setTitles] = useState(null);
-    const [returnTitles, setReturnTitles] = useState(null);
-
-    const [spotifyIndex, setSpotifyIndex] = useState(0);
-    const [spotify, setSpotify] = useState(null);
-    const [spotifyData, setSpotifyData] = useState(null);
-    const [spotifyAllAlbums, setSpotifyAllAlbums] = useState(null);
-    const [spotifyTotal, setSpotifyTotal] = useState(null);
-    const [spotifyAlbum, setSpotifyAlbum] = useState(null);
-    const [spotifyInterumAlbum, setSpotifyInterumAlbum] = useState(null);
-    const [spotifyAllAlbumTracks, setSpotifyAllAlbumTracks] = useState([]);
-    const [spotifyAllAlbumTracksString, setSpotifyAllAlbumTracksString] = useState(null);
-    const [albumsToAdd, setAlbumsToAdd] = useState(null);
 
     const weeklyMovieScoresId =  '15a8yM3uV2nouNvpbeAhYl'
 
@@ -147,268 +125,12 @@ const Playlist = ({ user }) => {
     useEffect(() => {
 
         const fetchData = async () => {
-            // before going through and adding albums, we must clear the playlist
-            // CLEAR PLAYLIST
-            // catchErrors(clearWeeklyMovieScores());
-
             const weeklyMovieScoresResponse = await getPlaylistById(weeklyMovieScoresId);
             setWeeklyMovieScores(weeklyMovieScoresResponse.data)
-
-            // https://www.movieinsider.com/movies/last-week
-            // $('.daily .row').toArray().map(x => x.children[1].children[0].innerText)
-
-            const movieResponse = await getWeeklyMovies(1, start, end)
-            setMoviesData(movieResponse.data)
         };
 
         catchErrors(fetchData());
     }, []);
-
-    useEffect(() => {
-        if (!moviesData) {
-            return;
-        }
-
-        // Playlist endpoint only returns 20 search at a time, so we need to
-        // make sure we get ALL search by fetching the next set of search
-        const fetchMoreData = async () => {
-            if (moviesData.page < moviesData.total_pages) {
-                const { data } = await getWeeklyMovies(moviesData.page + 1, start, end);
-                setMoviesData(data);
-            }
-        };
-
-        // Use functional update to update search state variable
-        // to avoid including search as a dependency for this hook
-        // and creating an infinite loop
-        setMovies(movies => ([
-            ...movies ? movies : [],
-            ...moviesData.results
-        ]));
-
-        // Fetch next set of search as needed
-        catchErrors(fetchMoreData());
-
-    }, [moviesData]);
-    
-    useEffect(() => {
-        if (movies !== null && moviesData !== null) {
-            if (movies.length === moviesData.total_results) {
-                setTitles([...new Set(movies.map(x => x.title).sort())])
-                console.log([...new Set(movies.map(x => x.title).sort())])
-            }
-        }
-    }, [movies, moviesData]);
-
-    useEffect(() => {
-        if (!titles) {
-            return;
-        }
-    
-        const fetchData = async (title) => {
-            // console.log(title)
-            let movieTitleStripped = title.replace(/[^a-zA-Z0-9-_]/g, ' ').trim()
-
-            if (movieTitleStripped !== '') {
-                // const searchResponse = await searchSpotify(`album:${title.replace(/[^a-zA-Z0-9-_]/g, ' ')} ( year:${lastYear}-${thisYear}&type=album`); // no tag:new as were using US release date and some of the albums get released earlier
-                const searchResponse = await searchSpotify(`album:${title.replace(/[^a-zA-Z0-9-_]/g, ' ')} ( tag:new&type=album`);
-
-                if (searchResponse.data.albums.items.length > 0) {
-                    setReturnTitles(returnTitles => ([
-                        ...returnTitles ? returnTitles : [],
-                        title
-                    ]));
-
-                    setSpotify(spotify => ([
-                        ...spotify ? spotify : [],
-                        searchResponse.data.albums
-                    ]));
-                }
-
-            } 
-            
-            if (titleIndex < titles.length - 1) {
-                // setTitleIndex((t) => t + 1) // results in an infinite loop
-                const newIndex = await titleIndex + 1 // when updating the trigger variable, wait for it to find the new value. 
-                setTitleIndex(newIndex)
-            }
-        };
-        
-        catchErrors(fetchData(titles[titleIndex]));
-
-    }, [titles, titleIndex]);
-
-    useEffect(() => {
-        if (!spotify) {
-            return;
-        }
-
-        if (titleIndex === titles.length - 1) {
-            if (spotifyIndex === 0) {
-                // console.log(returnTitles)
-                // console.log(spotify)
-            }
-            if (spotifyIndex < spotify.length) {
-                setSpotifyData(spotify[spotifyIndex])
-            }
-        }
-
-    }, [spotify, returnTitles, spotifyIndex, titles, titleIndex])
-
-    // KEY LOOP FOR GETTING ALL DATA FROM SPOTIFY
-    // When searchData updates, check if there are more search to fetch
-    // then update the state variable
-    useEffect(() => {
-        if (!spotifyData) {
-            return;
-        }
-
-        // Playlist endpoint only returns 20 search at a time, so we need to
-        // make sure we get ALL search by fetching the next set of search
-        const fetchMoreData = async () => {
-            if (spotifyData.next) {
-                const { data } = await axios.get(spotifyData.next);
-                setSpotifyData(data.albums);
-            } else {
-                // setTitleIndex((t) => t + 1) // results in an infinite loop
-                const newIndex = await spotifyIndex + 1 // when updating the trigger variable, wait for it to find the new value. 
-                setSpotifyIndex(newIndex)
-            }
-        };
-
-        // Use functional update to update search state variable
-        // to avoid including search as a dependency for this hook
-        // and creating an infinite loop
-        setSpotifyAllAlbums(spotifyAllAlbums => ([
-            ...spotifyAllAlbums ? spotifyAllAlbums : [],
-            ...spotifyData.items
-        ]));
-
-        // console.log(spotifyData.offset + ' out of ' + spotifyData.total)
-
-        // Fetch next set of search as needed
-        catchErrors(fetchMoreData());
-
-    }, [spotifyData]);
-    
-    // filter down based on soundtrack tags
-    useEffect(() => {
-        if (!spotifyAllAlbums) {
-            return;
-        }
-        
-        if (spotifyAllAlbums.length === spotifyData.total) {
-
-            const soundtrackTags = [
-                'ost',
-                'movie score',
-                'original score',
-                'motion picture soundtrack',
-                'soundtrack from the netflix film',
-                'soundtrack from the apple original film',
-                'soundtrack from the apple original',
-                'music from the motion picture'
-            ]
-            
-            // filter to soundtracks
-            let actualAlbums = spotifyAllAlbums.filter((x) => soundtrackTags.some(y => { if (x) { return (x.name.toLowerCase().includes(y)) } }));
-
-            setSpotifyTotal(spotifyTotal => ([
-                ...spotifyTotal ? spotifyTotal : [],
-                actualAlbums
-            ]));
-
-            // reset the variable for the next spot to go through
-            setSpotifyAllAlbums(null)
-        }
-    }, [spotifyAllAlbums, spotifyData, returnTitles]);
-
-    // currate the output and add to the playlist
-    useEffect(() => {
-        if (!spotifyTotal) {
-            return;
-        }
-
-        if (spotifyTotal.length === spotify.length) {
-
-            // narrow down to the specific album
-            let output = [] 
-            console.log(spotifyTotal)
-            console.log(returnTitles)
-            for (let i in spotifyTotal) {
-                if (spotifyTotal[i].length !== 0) {
-                    let album = spotifyTotal[i].filter(x => { 
-                        // lowercase and weird '
-                        let spotifyTitle = x.name.toLowerCase().replace("’", "'")
-                        let tmdbTitle = returnTitles[i].toLowerCase().replace("’", "'")
-
-                        // eliminate The and A from titles before comparing (and spaces?)
-                        spotifyTitle = spotifyTitle.replace(/a |the | /g, '')
-                        tmdbTitle = tmdbTitle.replace(/a |the | /g, '')
-
-                        // handle volume vs vol. differences
-                        if (tmdbTitle.includes('volume')) {
-                            if (spotifyTitle.startsWith(tmdbTitle + ' (')) {
-                                return spotifyTitle.startsWith(tmdbTitle + ' (')
-                            } else if (spotifyTitle.replace("volume", "vol.").startsWith(tmdbTitle.replace("volume", "vol.") + '(')) {
-                                return spotifyTitle.replace("volume", "vol.").startsWith(tmdbTitle.replace("volume", "vol.") + '(')
-                            }
-                        } else {
-                            return spotifyTitle.startsWith(tmdbTitle + '(')
-                        }
-                    })
-                    console.log(album)
-                    if (album.length > 0) {
-                        // output.push(album) // fast x scenario where there were 2 of the same album
-                        output.push(album[0])
-                    }
-                }
-            }
-
-            // add to playlist
-            const add = async (albumIndex, albumId) => {
-                // need to go through all the pages of songs. albums with more than 20 songs cut off at 20
-
-                const albumTracksResponse = await getAlbumTracks(albumId)
-                // setSpotifyAlbum(albumTracksResponse.data)
-                console.log(albumTracksResponse)
-
-                const addNext = async (inputData) => {
-                    console.log(inputData.items)
-
-                    // ADD THE ALBUMS TO THE PLAYLIST!!!! YAY!!!!
-                    // await addTracksToPlaylist(weeklyMovieScoresId, inputData.items.map(x => x.uri).join(','))
-                    console.log('added chunk of album ' + albumIndex)
-                    
-                    if (inputData.next) {
-                        const { data } = await axios.get(inputData.next);
-                        console.log(data)
-                        await addNext(data)
-                    }
-                }
-
-                await addNext(albumTracksResponse.data)
-
-            };
-
-            const updatePlaylist = async () => {
-                console.log(output)
-                for (let i in output) {
-
-                    catchErrors(await add(i, output[i].id));
-                    console.log('album ' + i + ' added')
-                    // fast x scenario where there were 2 of the same album
-                    // output[i].forEach(x => {
-                    // })
-                }
-            };
-            updatePlaylist()
-
-
-        }
-
-    }, [spotifyTotal, spotify, returnTitles])
-
             
     useEffect(() => {
         if (weeklyMovieScores !== null && user !== null) {
