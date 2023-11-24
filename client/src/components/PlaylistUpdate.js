@@ -324,6 +324,8 @@ const PlaylistUpdate = ({ user }) => {
                 'original score',
                 'motion picture soundtrack',
                 'soundtrack from the netflix film',
+                'soundtrack from the apple original film',
+                'soundtrack from the apple original',
                 'music from the motion picture'
             ]
             
