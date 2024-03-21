@@ -512,7 +512,7 @@ const PlaylistUpdate = ({ user }) => {
 
                 <div className='xsmall'>
                     <div id='playlist-header'>
-                        <img id='playlist-img' src={weeklyMovieScores ? (weeklyMovieScores.images.length > 0 ? weeklyMovieScores.images[0].url : blank_playlist) : blank_playlist} alt='playlist-img'></img>
+                        <img id='playlist-img' src={weeklyMovieScores ? (weeklyMovieScores.images !== null ? (weeklyMovieScores.images.length > 0 ? weeklyMovieScores.images[0].url : blank_playlist) : blank_playlist) : blank_playlist} alt='playlist-img'></img>
                         <div id='playlist-details'>
                             <a id='playlist-title' target='_blank' rel="noreferrer" href={weeklyMovieScores ? weeklyMovieScores.external_urls.spotify : '#'}>{weeklyMovieScores ? weeklyMovieScores.name : ''}</a>
                             <div id='playlist-meta'>
@@ -551,7 +551,7 @@ const PlaylistUpdate = ({ user }) => {
 
                 <div className='large'>
                     <div id='playlist-header'>
-                        <img id='playlist-img' src={weeklyMovieScores ? (weeklyMovieScores.images.length > 0 ? weeklyMovieScores.images[0].url : blank_playlist) : blank_playlist} alt='playlist-img'></img>
+                        <img id='playlist-img' src={weeklyMovieScores ? (weeklyMovieScores.images !== null ? (weeklyMovieScores.images.length > 0 ? weeklyMovieScores.images[0].url : blank_playlist) : blank_playlist) : blank_playlist} alt='playlist-img'></img>
                         <div id='playlist-details'>
                             <FiInfo id='playlist-info' onClick={handleShow}></FiInfo>
                             <p>PUBLIC PLAYLIST</p>
