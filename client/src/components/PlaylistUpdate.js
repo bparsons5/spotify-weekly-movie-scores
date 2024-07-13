@@ -145,10 +145,17 @@ const PlaylistUpdate = ({ user }) => {
         const fetchData = async () => {
             // before going through and adding albums, we must clear the playlist
             // CLEAR PLAYLIST
-            catchErrors(clearWeeklyMovieScores());
 
             const weeklyMovieScoresResponse = await getPlaylistById(weeklyMovieScoresId);
             setWeeklyMovieScores(weeklyMovieScoresResponse.data)
+
+            console.log(weeklyMovieScoresResponse)
+
+            if (weeklyMovieScoresResponse.data.tracks.items.length !== 0) {
+                catchErrors(clearWeeklyMovieScores());
+            }
+
+
 
             // https://www.movieinsider.com/movies/last-week
             // $('.daily .row').toArray().map(x => x.children[1].children[0].innerText)
