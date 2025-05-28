@@ -519,8 +519,6 @@ const PlaylistUpdate = ({ user }) => {
         followPlaylist('15a8yM3uV2nouNvpbeAhYl')
     }
 
-    console.log(playlistOwner.images[0].url);
-
     // account for 20+ tracks
 
     return (
