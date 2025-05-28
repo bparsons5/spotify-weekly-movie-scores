@@ -97,11 +97,6 @@ const PlaylistUpdate = ({ user }) => {
     const [spotifyData, setSpotifyData] = useState(null);
     const [spotifyAllAlbums, setSpotifyAllAlbums] = useState(null);
     const [spotifyTotal, setSpotifyTotal] = useState(null);
-    const [spotifyAlbum, setSpotifyAlbum] = useState(null);
-    const [spotifyInterumAlbum, setSpotifyInterumAlbum] = useState(null);
-    const [spotifyAllAlbumTracks, setSpotifyAllAlbumTracks] = useState([]);
-    const [spotifyAllAlbumTracksString, setSpotifyAllAlbumTracksString] = useState(null);
-    const [albumToAdd, setAlbumToAdd] = useState(null);
 
     const weeklyMovieScoresId =  '15a8yM3uV2nouNvpbeAhYl'
 
@@ -122,6 +117,7 @@ const PlaylistUpdate = ({ user }) => {
     // clear playlist
     const clearWeeklyMovieScores = async () => {
         let playlistTracksResponse = await getPlaylistTracks(weeklyMovieScoresId) // max of 100 at a time
+        console.log(1.5, playlistTracksResponse);
         let num = 0
         do
         {   
@@ -141,6 +137,7 @@ const PlaylistUpdate = ({ user }) => {
     };
 
     useEffect(() => {
+        console.log(2);
 
         const fetchData = async () => {
             // before going through and adding albums, we must clear the playlist
@@ -149,7 +146,7 @@ const PlaylistUpdate = ({ user }) => {
             const weeklyMovieScoresResponse = await getPlaylistById(weeklyMovieScoresId);
             setWeeklyMovieScores(weeklyMovieScoresResponse.data)
 
-            console.log(weeklyMovieScoresResponse)
+            console.log(2.1, weeklyMovieScoresResponse)
 
             if (weeklyMovieScoresResponse.data.tracks.items.length !== 0) {
                 catchErrors(clearWeeklyMovieScores());
@@ -160,14 +157,16 @@ const PlaylistUpdate = ({ user }) => {
             // https://www.movieinsider.com/movies/last-week
             // $('.daily .row').toArray().map(x => x.children[1].children[0].innerText)
 
-            const movieResponse = await getWeeklyMovies(1, start, end)
-            setMoviesData(movieResponse.data)
+            const movieResponse = await getWeeklyMovies(1, start, end);
+            console.log(2.2, movieResponse);
+            setMoviesData(movieResponse.data);
         };
 
         catchErrors(fetchData());
     }, []);
 
     useEffect(() => {
+        console.log(3, moviesData);
         if (!moviesData) {
             return;
         }
@@ -195,8 +194,10 @@ const PlaylistUpdate = ({ user }) => {
     }, [moviesData]);
     
     useEffect(() => {
+        console.log(4);
         if (movies !== null && moviesData !== null) {
-            if (movies.length === moviesData.total_results) {
+            // sometimes the nth page of the movie search data is empty.. So if the results is empty, continue on
+            if (movies.length === moviesData.total_results || moviesData.results.length === 0) {
                 setTitles([...new Set(movies.map(x => x.title).sort())])
                 // console.log([...new Set(movies.map(x => x.title).sort())])
             }
@@ -204,6 +205,7 @@ const PlaylistUpdate = ({ user }) => {
     }, [movies, moviesData]);
 
     useEffect(() => {
+        console.log(5, titles);
         if (!titles) {
             return;
         }
@@ -242,6 +244,7 @@ const PlaylistUpdate = ({ user }) => {
     }, [titles, titleIndex]);
 
     useEffect(() => {
+        console.log(6, spotify);
         if (!spotify) {
             return;
         }
@@ -262,6 +265,7 @@ const PlaylistUpdate = ({ user }) => {
     // When searchData updates, check if there are more search to fetch
     // then update the state variable
     useEffect(() => {
+        console.log(7, spotifyData);
         if (!spotifyData) {
             return;
         }
@@ -305,6 +309,7 @@ const PlaylistUpdate = ({ user }) => {
     
     // filter down based on soundtrack tags
     useEffect(() => {
+        console.log(8, spotifyAllAlbums);
         if (!spotifyAllAlbums) {
             return;
         }
@@ -349,6 +354,7 @@ const PlaylistUpdate = ({ user }) => {
 
     // currate the output and add to the playlist
     useEffect(() => {
+        console.log(9, spotifyTotal);
         if (!spotifyTotal) {
             return;
         }
@@ -442,6 +448,7 @@ const PlaylistUpdate = ({ user }) => {
 
             
     useEffect(() => {
+        console.log(10, weeklyMovieScores, user);
         if (weeklyMovieScores !== null && user !== null) {
             //console.log(weeklyMovieScores)
             //console.log(user)
@@ -467,6 +474,7 @@ const PlaylistUpdate = ({ user }) => {
     }, [ weeklyMovieScores, user ])
 
     useEffect(() => {
+        console.log(11, weeklyMovieScores, itemsData);
         if (weeklyMovieScores !== null && itemsData !== null) {
             //console.log(itemsData)
             // setItems(itemsData.items)
@@ -491,6 +499,7 @@ const PlaylistUpdate = ({ user }) => {
     }, [ weeklyMovieScores, itemsData ])
 
     useEffect(() => {
+        console.log(12, items);
         if (items.length > 0) {
             let tracks = items.map(x => x.track)
 
