@@ -195,9 +195,14 @@ const PlaylistUpdate = ({ user }) => {
     
     useEffect(() => {
         console.log(4);
+        console.log('movies', movies);
+        console.log('moviesData', moviesData);
         if (movies !== null && moviesData !== null) {
+            console.log(4.1, movies.length, moviesData.total_results)
             // sometimes the nth page of the movie search data is empty.. So if the results is empty, continue on
-            if (movies.length === moviesData.total_results || moviesData.results.length === 0) {
+            // spotify seems to not be returning the last element in the moviesData
+            if (movies.length === moviesData.total_results - 1 || moviesData.results.length === 0) {
+            console.log(4.2)
                 setTitles([...new Set(movies.map(x => x.title).sort())])
                 // console.log([...new Set(movies.map(x => x.title).sort())])
             }
